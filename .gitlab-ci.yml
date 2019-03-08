@@ -1,0 +1,17 @@
+checkstyle:
+  script:
+    - python3 /home/pycheckstyle/pycheckstyle.py --path ./src --config /home/codestyle-guide/config.xml
+    - python3 /home/pycheckstyle/pycheckstyle.py --path ./test --config /home/codestyle-guide/config.xml
+
+junit:
+  script:
+    - mkdir ./out
+    - javac ./test/homework/TestSuit.java -sourcepath ./test:./src -d ./out
+    - cd ./out
+    - java org.junit.runner.JUnitCore homework.TestSuit
+
+pat:
+  script:
+    - mkdir ./out
+    - javac ./src/homework/Main.java -sourcepath ./src -d ./out
+    - python3 -u script/python/pat.py
