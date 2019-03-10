@@ -1,6 +1,8 @@
 package homework;
 
-import homework.poly.parse.PolyParser;
+import homework.expression.core.ComputableTester;
+import homework.expression.core.Expression;
+import homework.expression.parse.ExpParser;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -87,6 +89,12 @@ public class MainTest {
     }
 
     @Test
+    public void getAnsNew() {
+        assertExpDerEquals("cos(x) ^2 + sin(x) ^2", "0");
+        assertExpDerEquals("x * x*\tx*x*x-0*x", "5*x^4");
+    }
+
+    @Test
     public void getLongerAns() {
         String longerInput = "- -4*x + x ^ 2 + x";
         StringBuilder builder = new StringBuilder();
@@ -95,7 +103,10 @@ public class MainTest {
         }
         longerInput = builder.toString();
         assertExpDerEquals(longerInput, "2000*x+5000", false);
+    }
 
+    @Test
+    public void getLongerAns2() {
         assertExpDerEquals("+x^1+ x^1 +x^1 + x^1++x^1+ +x^1++ x^1 ++x^1+ +" +
                 " x^1 ++ x^1 + +x^1 + + x^1-x^1- x^1 -x^1 - " +
                 "x^1--x^1- -x^1-- x^1 --x^1- - x^1 -- x^1 - -x^1 - - x^" +
@@ -116,10 +127,13 @@ public class MainTest {
                 " +x^ 1 + + x^ 1-x^ 1- x^ 1 -x^ 1 - x^ 1--x^ 1- -x^ 1--" +
                 " x^ 1 --x^ 1 ",
             "12", false);
+    }
 
+    @Test
+    public void getLongerLongerAns() {
         // 38w+
-        longerInput = "- -4*x + x ^ 2 + x + -0001 -+00000*x^0";
-        builder = new StringBuilder();
+        String longerInput = "- -4*x + x ^ 2 + x + -0001 -+00000*x^0";
+        StringBuilder builder = new StringBuilder();
         for (int i = 0; i < 10000; i++) {
             builder.append(longerInput);
         }
@@ -129,13 +143,47 @@ public class MainTest {
 
     private void assertExpDerEquals(
         String input, String expectedDer, boolean verbose) {
+        System.out.println("====================================");
+        System.out.println("MainTest.assertExpDerEquals");
         if (!verbose) {
             System.out.println("verbose = " + verbose);
         }
-        assertEquals(
-            PolyParser.getInstance().parseExp(expectedDer, verbose).toString(),
-            Main.getAns(input, verbose)
-        );
+
+        if (verbose) {
+            System.out.println("-------------------");
+            System.out.println("parsing expected exp");
+        }
+        Expression expectedExp = ExpParser.getInstance()
+            .parseExp(expectedDer, verbose);
+
+        if (verbose) {
+            System.out.println("expectedExp = " + expectedExp);
+        }
+
+        if (verbose) {
+            System.out.println("-------------------");
+            System.out.println("parsing actual exp");
+        }
+        Expression actualExp = ExpParser.getInstance().
+            parseExp(Main.getAns(input, verbose));
+        if (verbose) {
+            System.out.println("actualExp = " + actualExp);
+        }
+        ComputableTester tester = new ComputableTester(97);
+        ComputableTester expected =
+            (ComputableTester) expectedExp.compute(tester);
+        ComputableTester actual =
+            (ComputableTester) actualExp.compute(tester);
+
+        try {
+            assertEquals(expected, actual);
+        } catch (AssertionError e) {
+            System.out.println("---------------");
+            System.out.println("wrong:");
+            System.out.println("expected = " + expected);
+            System.out.println("actual = " + actual);
+            throw e;
+        }
     }
 
     private void assertExpDerEquals(String input, String expectedDer) {
@@ -149,8 +197,8 @@ public class MainTest {
     @Test
     public void getAnsByStream() {
         InputStream stream1 = new ByteArrayInputStream("".getBytes());
-        assertEquals("WRONG FORMAT!", Main.getAns(stream1));
+        assertEquals("WRONG FORMAT!", Main.getAns(stream1, true));
         InputStream stream2 = new ByteArrayInputStream("\n".getBytes());
-        assertEquals("WRONG FORMAT!", Main.getAns(stream2));
+        assertEquals("WRONG FORMAT!", Main.getAns(stream2, true));
     }
 }

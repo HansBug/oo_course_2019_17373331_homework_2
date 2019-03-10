@@ -1,7 +1,8 @@
 package homework;
 
-import homework.poly.PolyExp;
-import homework.poly.parse.PolyParser;
+import homework.expression.TriProdTermTree;
+import homework.expression.core.Expression;
+import homework.expression.parse.ExpParser;
 
 import java.io.InputStream;
 import java.util.Scanner;
@@ -13,6 +14,10 @@ public class Main {
     }
 
     static String getAns(InputStream stream) {
+        return getAns(stream, false);
+    }
+
+    static String getAns(InputStream stream, boolean debug) {
         Scanner scanner = new Scanner(stream);
         String line;
         if (scanner.hasNextLine()) {
@@ -20,7 +25,7 @@ public class Main {
         } else {
             line = "";
         }
-        return getAns(line);
+        return getAns(line, debug);
     }
 
     private static String getAns(String line) {
@@ -28,17 +33,20 @@ public class Main {
     }
 
     static String getAns(String line, boolean debug) {
-        return getAnsByPolyMultiMatcher(line, debug);
-    }
-
-    private static String getAnsByPolyMultiMatcher(String input,
-                                                   boolean debug) {
-        PolyExp exp = PolyParser.getInstance().parseExp(input, debug);
+        Expression exp = ExpParser.getInstance().parseExp(line, debug);
+        if (debug) {
+            System.out.println("Main.getAns:");
+            System.out.println("input exp = " + exp);
+        }
         if (exp == null) {
             return "WRONG FORMAT!";
-        } else {
-            PolyExp der = exp.getDerivative();
-            return der.toString();
         }
+        exp = exp.diff();
+        if (debug) {
+            System.out.println("Main.getAns:");
+            System.out.println("diff exp = " + exp);
+        }
+        return ((TriProdTermTree) exp.compute(new TriProdTermTree()))
+            .toTriExp().toString();
     }
 }

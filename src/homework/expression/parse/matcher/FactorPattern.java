@@ -1,20 +1,21 @@
-package homework.poly.parse.matcher;
+package homework.expression.parse.matcher;
 
-import homework.poly.PolyExp;
+import homework.expression.core.ExpFactory;
+import homework.expression.core.Expression;
 import jdk.nashorn.internal.runtime.regexp.joni.exception.ValueException;
 
 import java.math.BigInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class PolyPattern {
+public class FactorPattern {
     private static String BIG_INT_PATTERN = "([-+]?[0-9]+)";
     private static String PM_PATTERN = "([-+])";
-    private static String COEF_PM_PATTERN = "([-+])?";
-    private static String BLANK_PATTERN = "[\\ \\t]*";
-    private final int signGroupInd = 1;
+    private static String SIN_PATTERN = "sin\\(x\\)";
+    private static String COS_PATTERN = "cos\\(x\\)";
+    private static String BLANK_PATTERN = "[ \\t]*";
     private String rePatternStr;
-    private String polyPatternStr;
+    private String factorPatternStr;
     private Pattern rePattern;
     private Matcher matcher;
     private int coefGroupInd = 0;
@@ -22,8 +23,11 @@ public class PolyPattern {
     private BigInteger defaultIndex = BigInteger.ONE;
     private BigInteger defaultCoef = BigInteger.ONE;
 
-    private PolyPattern(String polyPatternStr, boolean setDefaultIndexToZero) {
-        this.polyPatternStr = polyPatternStr;
+    private Expression coreFactorExp = ExpFactory.var();
+
+    private FactorPattern(String factorPatternStr,
+                          boolean setDefaultIndexToZero) {
+        this.factorPatternStr = factorPatternStr;
         rePatternStr = buildRePatternStr();
         rePattern = Pattern.compile(rePatternStr);
         if (setDefaultIndexToZero) {
@@ -32,12 +36,13 @@ public class PolyPattern {
     }
 
     /**
-     * compile a matcher by a polyPatternStr String.
+     * compile a matcher by a factorPatternStr String.
      * <p>
      * reg exp can be compiled automatically
      *
-     * @param polyPatternStr        a polyPatternStr string.
-     *                              a polyPatternStr should be a string contains
+     * @param polyPatternStr        a factorPatternStr string.
+     *                              a factorPatternStr should be a string
+     *                              contains
      *                              only [ c | + | * | x | ^ | i ]
      *                              <p>
      *                              where
@@ -50,34 +55,40 @@ public class PolyPattern {
      *                              - i is a number placeholder, for index
      * @param setDefaultIndexToZero set the default index value from 1 to 0
      */
-    public static PolyPattern compile(String polyPatternStr,
-                                      boolean setDefaultIndexToZero) {
+    public static FactorPattern compile(String polyPatternStr,
+                                        boolean setDefaultIndexToZero) {
         String striped = polyPatternStr.replaceAll("\\s", "");
-        Pattern checkPattern = Pattern.compile("^[c+*x^i]+$");
+        Pattern checkPattern = Pattern.compile("^[c+*x^iSC]+$");
         if (!checkPattern.matcher(striped).find()) {
-            throw new ValueException("Bad poly pattern str: " + polyPatternStr);
+            throw new ValueException("Bad expression pattern str: " +
+                polyPatternStr);
         }
-        return new PolyPattern(polyPatternStr, setDefaultIndexToZero);
+        return new FactorPattern(polyPatternStr, setDefaultIndexToZero);
     }
 
-    public String getPolyPatternStr() {
-        return polyPatternStr;
+    Expression getFactorExp() {
+        return ExpFactory.pow(
+            ExpFactory.mul(getCoef(), coreFactorExp),
+            getIndex());
+    }
+
+    public String getFactorPatternStr() {
+        return factorPatternStr;
     }
 
     private String buildRePatternStr() {
         StringBuilder builder = new StringBuilder();
         builder.append("^");
         builder.append(BLANK_PATTERN);
-        builder.append(PM_PATTERN);
-        builder.append(BLANK_PATTERN);
-        int groupCount = 2;
+        int groupCount = 1;
         for (char c :
-            getPolyPatternStr().toCharArray()) {
+            getFactorPatternStr().toCharArray()) {
             switch (c) {
                 case 'c': {
                     builder.append(BIG_INT_PATTERN);
                     coefGroupInd = groupCount;
                     groupCount += 1;
+                    coreFactorExp = ExpFactory.constant(1);
                     break;
                 }
                 case 'i': {
@@ -87,13 +98,14 @@ public class PolyPattern {
                     break;
                 }
                 case '+': {
-                    builder.append(COEF_PM_PATTERN);
+                    builder.append(PM_PATTERN);
                     coefGroupInd = groupCount;
                     groupCount += 1;
                     break;
                 }
                 case 'x': {
                     builder.append("x");
+                    coreFactorExp = ExpFactory.var();
                     break;
                 }
                 case '^': {
@@ -102,6 +114,16 @@ public class PolyPattern {
                 }
                 case '*': {
                     builder.append("\\*");
+                    break;
+                }
+                case 'S': {
+                    builder.append(SIN_PATTERN);
+                    coreFactorExp = ExpFactory.sin(ExpFactory.var());
+                    break;
+                }
+                case 'C': {
+                    builder.append(COS_PATTERN);
+                    coreFactorExp = ExpFactory.cos(ExpFactory.var());
                     break;
                 }
                 default: {
@@ -120,17 +142,6 @@ public class PolyPattern {
 
     boolean find() {
         return matcher.find();
-    }
-
-    private BigInteger getSign() {
-        if (matcher.group(signGroupInd) == null) {
-            return BigInteger.ONE;
-        }
-        if (matcher.group(signGroupInd).equals("-")) {
-            return BigInteger.ONE.negate();
-        } else {
-            return BigInteger.ONE;
-        }
     }
 
     private BigInteger getCoef() {
@@ -155,18 +166,14 @@ public class PolyPattern {
         return new BigInteger(matcher.group(indexGroupInd));
     }
 
-    PolyExp getTermExp() {
-        return new PolyExp(getIndex(), getCoef().multiply(getSign()));
-    }
-
     String getMatchedString() {
         return matcher.group(0);
     }
 
     @Override
     public String toString() {
-        return "PolyPattern{" +
-            "\'" + polyPatternStr + '\'' +
+        return "FactorPattern{" +
+            "\'" + factorPatternStr + '\'' +
             '}';
     }
 }
