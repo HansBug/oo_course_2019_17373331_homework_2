@@ -1,5 +1,7 @@
 package homework.expression.core;
 
+import java.util.Objects;
+
 public class VariableHolder implements Expression {
 
     private Expression hold;
@@ -60,5 +62,20 @@ public class VariableHolder implements Expression {
         } else {
             return hold.toString();
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (hold == null) {
+            return false;
+        }
+        VariableHolder that = (VariableHolder) o;
+        return Objects.equals(hold, that.hold);
     }
 }

@@ -1,6 +1,7 @@
 package homework.expression.core;
 
 import java.math.BigInteger;
+import java.util.Objects;
 
 class Constant extends BaseImmutableExp implements Expression {
 
@@ -56,5 +57,22 @@ class Constant extends BaseImmutableExp implements Expression {
 
     public int compareTo(Constant value) {
         return this.value.compareTo(value.value);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Constant constant = (Constant) o;
+        return Objects.equals(value, constant.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
     }
 }

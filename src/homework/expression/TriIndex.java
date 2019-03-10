@@ -34,21 +34,29 @@ public class TriIndex {
         );
     }
 
+    public TriIndex add(long var, long sin, long cos) {
+        return add(new TriIndex(
+            BigInteger.valueOf(var),
+            BigInteger.valueOf(sin),
+            BigInteger.valueOf(cos)
+        ));
+    }
+
     public TriIndex mul(TriIndex other) {
         return new TriIndex(other.ind1.multiply(ind1),
             other.ind2.multiply(ind2),
             other.ind3.multiply(ind3));
     }
 
-    BigInteger getInd1() {
+    BigInteger getVarInd() {
         return ind1;
     }
 
-    BigInteger getInd2() {
+    BigInteger getSinInd() {
         return ind2;
     }
 
-    BigInteger getInd3() {
+    BigInteger getCosInd() {
         return ind3;
     }
 
@@ -69,5 +77,15 @@ public class TriIndex {
     @Override
     public int hashCode() {
         return Objects.hash(ind1, ind2, ind3);
+    }
+
+    int compareTo(TriIndex other) {
+        if (!ind1.equals(other.ind1)) {
+            return ind1.compareTo(other.ind1);
+        } else if (!ind2.equals(other.ind2)) {
+            return ind2.compareTo(other.ind2);
+        } else {
+            return ind3.compareTo(other.ind3);
+        }
     }
 }

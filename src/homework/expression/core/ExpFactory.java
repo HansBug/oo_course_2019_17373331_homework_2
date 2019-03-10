@@ -23,6 +23,7 @@ public class ExpFactory {
 
         // const * const
         if (exp1 instanceof Constant && exp2 instanceof Constant) {
+
             return constant(((Constant) exp1).getValue().multiply(
                 ((Constant) exp2).getValue()
             ));

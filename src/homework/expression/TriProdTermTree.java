@@ -39,7 +39,7 @@ public class TriProdTermTree implements Computable {
         TriExp exp = new TriExp();
         for (Pair<TriIndex, BigInteger> pair :
             toPairList()) {
-            exp.append(pair.getKey(), pair.getValue());
+            exp.addAppend(pair.getKey(), pair.getValue());
         }
         return exp;
     }

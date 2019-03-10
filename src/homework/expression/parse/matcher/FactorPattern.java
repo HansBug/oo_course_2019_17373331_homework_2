@@ -67,9 +67,8 @@ public class FactorPattern {
     }
 
     Expression getFactorExp() {
-        return ExpFactory.pow(
-            ExpFactory.mul(getCoef(), coreFactorExp),
-            getIndex());
+        return ExpFactory.mul(getCoef(),
+            ExpFactory.pow(coreFactorExp, getIndex()));
     }
 
     public String getFactorPatternStr() {

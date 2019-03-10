@@ -129,7 +129,6 @@ public class MainTest {
             "12", false);
     }
 
-    @Test
     public void getLongerLongerAns() {
         // 38w+
         String longerInput = "- -4*x + x ^ 2 + x + -0001 -+00000*x^0";

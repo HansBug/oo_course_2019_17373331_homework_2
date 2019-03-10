@@ -24,5 +24,16 @@ public class TriExpTest {
         assertExpStrEquals("-x", "-x");
         assertExpStrEquals("++sin(x)", "sin(x)");
         assertExpStrEquals("-+cos(x)", "-cos(x)");
+        assertExpStrEquals("+4*x - -x^2 + x", "5*x+x^2");
+    }
+
+    @Test
+    public void mergeTrigo() {
+        assertExpStrEquals("cos(x) * sin(x) ^2 + cos(x) ^3", "cos(x)");
+        assertExpStrEquals("cos(x)^4 + 2 * sin(x) ^2 * cos(x) ^2 + sin(x) ^4",
+            "1");
+        assertExpStrEquals("sin(x) ^2 + cos(x) ^2", "1");
+        assertExpStrEquals("sin(x)^3 + 3 * sin(x)^1*cos(x)^2",
+            "2*sin(x)*cos(x)^2+sin(x)");
     }
 }
