@@ -22,7 +22,7 @@ public class TermParser {
     }
 
     /**
-     * Parse a PolyExp from giving string
+     * Parse a Expression from giving string
      *
      * @param input just a string
      * @return parsed expression. if failed, return null
@@ -32,8 +32,8 @@ public class TermParser {
     }
 
     public Expression parseTermExp(String input, boolean debug) {
-        FactorMultiMatcher matcher = new FactorMultiMatcher();
 
+        // the first +/- can be a 1/-1 factor
         final Pattern pmPtn = Pattern.compile("^[ \\t]*([-+]?)[ \\t]*");
         Matcher pmMatcher = pmPtn.matcher(input);
         Expression resExp;
@@ -42,7 +42,11 @@ public class TermParser {
         } else {
             resExp = ExpFactory.constant(1);
         }
+
+        // add a '*' to the head
         buffer = preprocessInput(input.substring(pmMatcher.end()));
+
+        FactorMultiMatcher matcher = new FactorMultiMatcher();
         final String starStr = "^[ \\t]*\\*[ \\t]*";
         Pattern starPtn = Pattern.compile(starStr);
         while (!buffer.isEmpty()) {

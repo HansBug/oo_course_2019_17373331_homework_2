@@ -134,6 +134,10 @@ public class MainTest {
         assertExpDerEquals("++ +1", "0");
         assertExpDerEquals("+ + +1", "0");
         assertExpWrongFormat("+ + + 1");
+        assertExpDerEquals("sin( x)", "cos(x)");
+        assertExpDerEquals("cos(\tx)", "-sin(x)");
+        assertExpDerEquals("cos(x )", "-sin(x)");
+        assertExpDerEquals("sin(x\t)", "cos(x)");
 
         assertExpDerEquals("+ +x* 1-+ 1*x", "0");
         assertExpDerEquals("+++19260817", "0");

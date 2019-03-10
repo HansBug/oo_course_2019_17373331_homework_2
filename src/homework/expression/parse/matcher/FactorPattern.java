@@ -12,8 +12,10 @@ public class FactorPattern {
     private static final String BIG_INT_PATTERN = "([-+]?[0-9]+)";
     private static final String PM_PATTERN = "([-+])";
     private static final String BLANK_PATTERN = "[ \\t]*";
-    private static final String SIN_PATTERN = "sin" + BLANK_PATTERN + "\\(x\\)";
-    private static final String COS_PATTERN = "cos" + BLANK_PATTERN + "\\(x\\)";
+    private static final String SIN_PATTERN = "sin" + BLANK_PATTERN +
+        "\\(" + BLANK_PATTERN + "x" + BLANK_PATTERN + "\\)";
+    private static final String COS_PATTERN = "cos" + BLANK_PATTERN +
+        "\\(" + BLANK_PATTERN + "x" + BLANK_PATTERN + "\\)";
     private String rePatternStr;
     private String factorPatternStr;
     private Pattern rePattern;
