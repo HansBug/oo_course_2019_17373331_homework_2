@@ -33,8 +33,16 @@ public class TermParser {
 
     public Expression parseTermExp(String input, boolean debug) {
         FactorMultiMatcher matcher = new FactorMultiMatcher();
-        Expression resExp = ExpFactory.constant(1);
-        buffer = preprocessInput(input);
+
+        final Pattern pmPtn = Pattern.compile("^[ \\t]*([-+]?)[ \\t]*");
+        Matcher pmMatcher = pmPtn.matcher(input);
+        Expression resExp;
+        if (pmMatcher.find() && pmMatcher.group(1).equals("-")) {
+            resExp = ExpFactory.constant(-1);
+        } else {
+            resExp = ExpFactory.constant(1);
+        }
+        buffer = preprocessInput(input.substring(pmMatcher.end()));
         final String starStr = "^[ \\t]*\\*[ \\t]*";
         Pattern starPtn = Pattern.compile(starStr);
         while (!buffer.isEmpty()) {

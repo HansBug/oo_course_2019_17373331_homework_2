@@ -22,7 +22,7 @@ public class MainTest {
         assertExpDerEquals("234*x", "234");
         assertExpDerEquals("++123*x", "123");
         assertExpDerEquals("-  +123*x", "-123");
-        assertExpWrongFormat("- + 123*x");
+        assertExpDerEquals("- + 123*x", "-123"); // - (+1 * 123* x)
 
         // examples
         assertExpDerEquals("4*x+x^2+x", "2*x+5");
@@ -33,7 +33,7 @@ public class MainTest {
         assertExpDerEquals("+19260817*x", "19260817");
         assertExpDerEquals("+ 19260817*x", "19260817");
         assertExpDerEquals("+ +19260817*x", "19260817");
-        assertExpWrongFormat("++ 19260817*x");
+        assertExpDerEquals("++ 19260817*x", "19260817");
         assertExpWrongFormat("1926 0817 * x");
         assertExpWrongFormat("");
 
@@ -68,7 +68,7 @@ public class MainTest {
         assertExpDerEquals("+\t1\t*x\t^12\t", "12*x^11");
         assertExpDerEquals("+\t 1 \t*x \t \t^12\t", "12*x^11");
         assertExpWrongFormat("\f1"); // but i don't think it's useful.
-        assertExpWrongFormat("++ 1*x^12");
+        assertExpDerEquals("++ 1*x^12", "12*x^11");
 
         //wrong term
         assertExpWrongFormat("        xx^2");
@@ -130,6 +130,16 @@ public class MainTest {
         assertExpDerEquals("++x", "1");
         assertExpWrongFormat("+++x");
         assertExpWrongFormat("++++x");
+        assertExpDerEquals("+++1", "0");
+        assertExpDerEquals("++ +1", "0");
+        assertExpDerEquals("+ + +1", "0");
+        assertExpWrongFormat("+ + + 1");
+
+        assertExpDerEquals("+ +x* 1-+ 1*x", "0");
+        assertExpDerEquals("+++19260817", "0");
+        assertExpWrongFormat("2*+sin(x)+4*cos(x)");
+        assertExpDerEquals("cos (x) + sin (x)", "-sin(x)+cos(x)");
+        assertExpDerEquals("+ ++0*x^2*sin (x)^3", "0");
     }
 
     @Test

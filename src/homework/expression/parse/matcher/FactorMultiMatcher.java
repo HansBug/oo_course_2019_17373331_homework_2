@@ -15,12 +15,6 @@ public class FactorMultiMatcher {
         addMatcher("x^i");
         addMatcher("S^i");
         addMatcher("C^i");
-        addMatcher("+x");
-        addMatcher("+S");
-        addMatcher("+C");
-        addMatcher("+x^i");
-        addMatcher("+S^i");
-        addMatcher("+C^i");
         addMatcher("c");
     }
 

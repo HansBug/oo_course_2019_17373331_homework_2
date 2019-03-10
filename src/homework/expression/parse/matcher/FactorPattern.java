@@ -9,11 +9,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class FactorPattern {
-    private static String BIG_INT_PATTERN = "([-+]?[0-9]+)";
-    private static String PM_PATTERN = "([-+])";
-    private static String SIN_PATTERN = "sin\\(x\\)";
-    private static String COS_PATTERN = "cos\\(x\\)";
-    private static String BLANK_PATTERN = "[ \\t]*";
+    private static final String BIG_INT_PATTERN = "([-+]?[0-9]+)";
+    private static final String PM_PATTERN = "([-+])";
+    private static final String BLANK_PATTERN = "[ \\t]*";
+    private static final String SIN_PATTERN = "sin" + BLANK_PATTERN + "\\(x\\)";
+    private static final String COS_PATTERN = "cos" + BLANK_PATTERN + "\\(x\\)";
     private String rePatternStr;
     private String factorPatternStr;
     private Pattern rePattern;
