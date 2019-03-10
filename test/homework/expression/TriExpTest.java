@@ -35,5 +35,10 @@ public class TriExpTest {
         assertExpStrEquals("sin(x) ^2 + cos(x) ^2", "1");
         assertExpStrEquals("sin(x)^3 + 3 * sin(x)^1*cos(x)^2",
             "2*sin(x)*cos(x)^2+sin(x)");
+        assertExpStrEquals("1-cos(x)^2", "sin(x)^2");
+        assertExpStrEquals("+x^2*cos(x)^3 - x^2*cos(x)",
+            "-x^2*sin(x)^2*cos(x)");
+        assertExpStrEquals("sin(x)-sin(x)^3",
+            "sin(x)*cos(x)^2");
     }
 }

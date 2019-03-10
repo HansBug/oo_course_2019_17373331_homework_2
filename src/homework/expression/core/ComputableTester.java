@@ -5,56 +5,56 @@ import java.util.Objects;
 
 public class ComputableTester implements Computable {
 
-    private BigInteger value;
+    private double value;
 
-    ComputableTester(BigInteger value) {
+    ComputableTester(double value) {
         this.value = value;
     }
 
     public ComputableTester(long value) {
-        this(BigInteger.valueOf(value));
+        this((double) value);
     }
 
     @Override
     public Computable add(Computable other) {
         assert other instanceof ComputableTester;
         return new ComputableTester(
-            value.add(((ComputableTester) other).value));
+            value + ((ComputableTester) other).value);
     }
 
     @Override
     public Computable mul(Computable other) {
         assert other instanceof ComputableTester;
         return new ComputableTester(
-            value.multiply(((ComputableTester) other).value));
+            value * ((ComputableTester) other).value);
     }
 
     @Override
     public Computable pow(Computable index) {
         assert index instanceof ComputableTester;
-        BigInteger indexValue = ((ComputableTester) index).value;
-        return new ComputableTester(value.modPow(indexValue,
-            BigInteger.valueOf(1000007)));
+        double indexValue = ((ComputableTester) index).value;
+        return new ComputableTester(Math.pow(value, indexValue));
     }
 
     @Override
     public Computable constant(BigInteger bigInteger) {
-        return new ComputableTester(bigInteger);
+        long longVal = bigInteger.longValue();
+        return new ComputableTester(longVal);
     }
 
     @Override
     public Computable sin() {
-        return new ComputableTester(value.add(BigInteger.valueOf(7)));
+        return new ComputableTester(Math.sin(value));
     }
 
     @Override
     public Computable cos() {
-        return new ComputableTester(value.negate());
+        return new ComputableTester(Math.cos(value));
     }
 
     @Override
     public Computable variable() {
-        return constant(this.value);
+        return constant(BigInteger.valueOf((long) value));
     }
 
     @Override
@@ -71,6 +71,6 @@ public class ComputableTester implements Computable {
 
     @Override
     public String toString() {
-        return value.toString();
+        return ((Double) value).toString();
     }
 }

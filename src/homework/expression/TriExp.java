@@ -146,10 +146,41 @@ public class TriExp {
 
     void mergeTrigo() {
         while (true) {
-            if (!mergeTrigoOnce()) {
+            if (!mergeTrigoOnce()
+                && !mergeTrigoAndRootOnce(true)
+                && !mergeTrigoAndRootOnce(false)) {
                 break;
             }
         }
+    }
+
+    /**
+     * terms like 1-sin^2 = cos^2
+     */
+    boolean mergeTrigoAndRootOnce(boolean isCos) {
+        HashSet<TriIndex> trigoSet = getTrigoIndSet(isCos);
+        boolean modified = false;
+        for (TriIndex targetIndex : trigoSet) {
+            TriIndex trigoOriIndex;
+            if (isCos) {
+                trigoOriIndex = targetIndex.add(0, 0, 2);
+            } else {
+                trigoOriIndex = targetIndex.add(0, 2, 0);
+            }
+            BigInteger trigoCoef = termCoefMap.get(trigoOriIndex);
+            BigInteger rootCoef = termCoefMap.get(targetIndex);
+            if (trigoCoef.negate().equals(rootCoef)) {
+                termCoefMap.remove(targetIndex);
+                termCoefMap.remove(trigoOriIndex);
+                if (isCos) {
+                    addAppend(targetIndex.add(0, 2, 0), rootCoef);
+                } else {
+                    addAppend(targetIndex.add(0, 0, 2), rootCoef);
+                }
+                modified = true;
+            }
+        }
+        return modified;
     }
 
     @Override

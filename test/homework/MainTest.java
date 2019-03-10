@@ -23,6 +23,8 @@ public class MainTest {
         assertExpDerEquals("++123*x", "123");
         assertExpDerEquals("-  +123*x", "-123");
         assertExpWrongFormat("- + 123*x");
+
+        // examples
         assertExpDerEquals("4*x+x^2+x", "2*x+5");
         assertExpDerEquals("4*x+x^2+x", "4+2*x+1");
         assertExpWrongFormat("4x+x^2+x");
@@ -89,9 +91,45 @@ public class MainTest {
     }
 
     @Test
+    public void getAnsNewExamplesTest() {
+        //12
+        assertExpDerEquals("2*sin(x)", "2*cos(x)");
+        //13
+        assertExpDerEquals("-2*cos(x)", "2*sin(x)");
+        //14
+        assertExpWrongFormat("5*sin(2 * x)");
+        //15
+        assertExpWrongFormat("8*cos(x^2)");
+        //16
+        assertExpWrongFormat("3*sin(90)");
+        //17
+        assertExpDerEquals("23+sin(x)*3+x^8", "3*cos(x)+8*x^7");
+        //18
+        assertExpDerEquals("cos(x)* sin(x)* 5+4 *x^3",
+            "-5*sin(x)^2+5*cos(x)*cos(x) + 12*x^2");
+        //19
+        assertExpDerEquals("43+4*x^3", "12*x^2");
+        //20
+        assertExpDerEquals("5* x^4* sin(x)",
+            "5*x^4*cos(x)+20*x^3*sin(x)");
+        //21
+        assertExpDerEquals("5*x^4*cos(x)",
+            "20*x^3*cos(x)-5*x^4*sin(x)");
+        //22
+        assertExpWrongFormat("6*si n(x)");
+        //23
+        assertExpWrongFormat("6*co s(x)");
+        //24
+        assertExpDerEquals("2*x^2*3", "12*x");
+    }
+
+    @Test
     public void getAnsNew() {
         assertExpDerEquals("cos(x) ^2 + sin(x) ^2", "0");
         assertExpDerEquals("x * x*\tx*x*x-0*x", "5*x^4");
+        assertExpDerEquals("++x", "1");
+        assertExpWrongFormat("+++x");
+        assertExpWrongFormat("++++x");
     }
 
     @Test
