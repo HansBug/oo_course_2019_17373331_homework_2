@@ -1,4 +1,4 @@
-package homework.expression.core;
+package homework.expression.core.interfaces;
 
 import java.math.BigInteger;
 
@@ -10,6 +10,10 @@ public interface Computable {
     Computable pow(Computable index);
 
     Computable constant(BigInteger bigInteger);
+
+    default Computable constant(long value) {
+        return constant(BigInteger.valueOf(value));
+    }
 
     Computable sin();
 

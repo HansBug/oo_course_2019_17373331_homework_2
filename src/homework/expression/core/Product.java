@@ -1,5 +1,9 @@
 package homework.expression.core;
 
+import homework.expression.core.base.BaseImmutableExp;
+import homework.expression.core.interfaces.Computable;
+import homework.expression.core.interfaces.Expression;
+
 /**
  * A Product is a Expression seems like exp1 * exp2...
  */
@@ -23,15 +27,12 @@ public class Product extends BaseImmutableExp implements Expression {
 
     @Override
     public Expression diff() {
-        return ExpFactory.add(
-            ExpFactory.mul(exp1, exp2.diff()),
-            ExpFactory.mul(exp1.diff(), exp2)
-        );
+        return exp2.diff().mul(exp1).add(exp1.diff().mul(exp2));
     }
 
     @Override
     public Expression negate() {
-        return ExpFactory.mul(exp1.negate(), exp2);
+        return exp1.negate().mul(exp2);
     }
 
     @Override
@@ -40,12 +41,12 @@ public class Product extends BaseImmutableExp implements Expression {
     }
 
     @Override
-    public boolean checkIsZero() {
+    public boolean uncachedIsZero() {
         return false;
     }
 
     @Override
-    public boolean checkIsOne() {
+    public boolean uncachedIsOne() {
         return exp1.isOne() && exp2.isOne();
     }
 

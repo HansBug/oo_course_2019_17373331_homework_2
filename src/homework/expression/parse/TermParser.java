@@ -1,7 +1,8 @@
 package homework.expression.parse;
 
-import homework.expression.core.ExpFactory;
-import homework.expression.core.Expression;
+import homework.expression.core.DefaultExpFactory;
+import homework.expression.core.interfaces.ExpFactory;
+import homework.expression.core.interfaces.Expression;
 import homework.expression.parse.matcher.FactorMultiMatcher;
 
 import java.util.regex.Matcher;
@@ -9,6 +10,7 @@ import java.util.regex.Pattern;
 
 public class TermParser {
 
+    private static final ExpFactory FACTORY = DefaultExpFactory.getInstance();
     private String buffer;
 
     /**
@@ -17,7 +19,7 @@ public class TermParser {
     private TermParser() {
     }
 
-    public static TermParser getInstance() {
+    static TermParser getInstance() {
         return PolyParserSingleton.singleton;
     }
 
@@ -38,9 +40,9 @@ public class TermParser {
         Matcher pmMatcher = pmPtn.matcher(input);
         Expression resExp;
         if (pmMatcher.find() && pmMatcher.group(1).equals("-")) {
-            resExp = ExpFactory.constant(-1);
+            resExp = FACTORY.constant(-1);
         } else {
-            resExp = ExpFactory.constant(1);
+            resExp = FACTORY.constant(1);
         }
 
         // add a '*' to the head
@@ -62,7 +64,7 @@ public class TermParser {
                     System.out.println("matcher.getFactorExp() = "
                         + matcher.getFactorExp());
                 }
-                resExp = ExpFactory.mul(resExp, matcher.getFactorExp());
+                resExp = resExp.mul(matcher.getFactorExp());
                 buffer = buffer.substring(matcher.getMatchedLength());
             } else {
                 return null;

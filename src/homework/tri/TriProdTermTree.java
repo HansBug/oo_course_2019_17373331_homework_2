@@ -1,7 +1,7 @@
-package homework.expression;
+package homework.tri;
 
-import homework.expression.core.Computable;
-import homework.expression.core.Expression;
+import homework.expression.core.interfaces.Computable;
+import homework.expression.core.interfaces.Expression;
 import javafx.util.Pair;
 
 import java.math.BigInteger;

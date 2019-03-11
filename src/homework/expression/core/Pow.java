@@ -1,21 +1,16 @@
 package homework.expression.core;
 
-import java.math.BigInteger;
+import homework.expression.core.base.BaseImmutableExp;
+import homework.expression.core.interfaces.Computable;
+import homework.expression.core.interfaces.Expression;
+import homework.expression.core.interfaces.ValueExp;
 
 public class Pow extends BaseImmutableExp implements Expression {
 
     private Expression base;
-    private Expression index;
+    private ValueExp index;
 
-    Pow(Expression base, long index) {
-        this(base, BigInteger.valueOf(index));
-    }
-
-    Pow(Expression base, BigInteger index) {
-        this(base, ExpFactory.constant(index));
-    }
-
-    Pow(Expression base, Expression index) {
+    Pow(Expression base, ValueExp index) {
         this.base = base;
         this.index = index;
     }
@@ -24,17 +19,17 @@ public class Pow extends BaseImmutableExp implements Expression {
         return base;
     }
 
-    public Expression getIndex() {
+    public ValueExp getIndex() {
         return index;
     }
 
     @Override
-    public boolean checkIsZero() {
+    public boolean uncachedIsZero() {
         return base.isZero();
     }
 
     @Override
-    public boolean checkIsOne() {
+    public boolean uncachedIsOne() {
         return indexIsZero();
     }
 
@@ -50,24 +45,18 @@ public class Pow extends BaseImmutableExp implements Expression {
     public Expression diff() {
         if (index.isZero()) {
             // constant
-            return ExpFactory.constant(0);
+            return constant(0);
         } else {
             // (x^a)' = a * x^(a-1)
-            assert index instanceof Constant;
-            return
-                ExpFactory.mul(
-                    ExpFactory.mul(index,
-                        ExpFactory.pow(base,
-                            ExpFactory.add(index, ExpFactory.constant(-1))
-                        )
-                    ), base.diff()
-                );
+            return base.diff().mul(index).mul(
+                base.pow(index.add(constant(-1)))
+            );
         }
     }
 
     @Override
     public Expression negate() {
-        return ExpFactory.mul(ExpFactory.constant(-1), this);
+        return mul(constant(-1));
     }
 
     @Override

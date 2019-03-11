@@ -1,8 +1,8 @@
 package homework;
 
-import homework.expression.TriProdTermTree;
-import homework.expression.core.Expression;
+import homework.expression.core.interfaces.Expression;
 import homework.expression.parse.ExpParser;
+import homework.tri.TriProdTermTree;
 
 import java.io.InputStream;
 import java.util.Scanner;

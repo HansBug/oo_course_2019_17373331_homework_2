@@ -1,12 +1,15 @@
 package homework.expression.parse;
 
-import homework.expression.core.ExpFactory;
-import homework.expression.core.Expression;
+import homework.expression.core.DefaultExpFactory;
+import homework.expression.core.interfaces.ExpFactory;
+import homework.expression.core.interfaces.Expression;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ExpParser {
+
+    private static final ExpFactory FACTORY = DefaultExpFactory.getInstance();
 
     public static ExpParser getInstance() {
         return ExpParserSingleton.singleton;
@@ -25,7 +28,7 @@ public class ExpParser {
     public Expression parseExp(String input, boolean debug) {
         String buffer;
         TermParser parser = TermParser.getInstance();
-        Expression resExp = ExpFactory.constant(0);
+        Expression resExp = FACTORY.constant(0);
         buffer = preprocessInput(input);
         final String pmStr = "^[ \\t]*([-+])[ \\t]*";
         Pattern pmPtn = Pattern.compile(pmStr);
@@ -46,9 +49,9 @@ public class ExpParser {
             Expression exp = parser.parseTermExp(buffer, debug);
             if (exp != null) {
                 if (isPos) {
-                    resExp = ExpFactory.add(resExp, exp);
+                    resExp = resExp.add(exp);
                 } else {
-                    resExp = ExpFactory.sub(resExp, exp);
+                    resExp = resExp.add(exp.negate());
                 }
                 buffer = parser.getRemainedBuffer();
             } else {

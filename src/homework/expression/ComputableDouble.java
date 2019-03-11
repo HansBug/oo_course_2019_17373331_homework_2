@@ -1,55 +1,57 @@
-package homework.expression.core;
+package homework.expression;
+
+import homework.expression.core.interfaces.Computable;
 
 import java.math.BigInteger;
 import java.util.Objects;
 
-public class ComputableTester implements Computable {
+public class ComputableDouble implements Computable {
 
     private double value;
 
-    ComputableTester(double value) {
+    ComputableDouble(double value) {
         this.value = value;
     }
 
-    public ComputableTester(long value) {
+    public ComputableDouble(long value) {
         this((double) value);
     }
 
     @Override
     public Computable add(Computable other) {
-        assert other instanceof ComputableTester;
-        return new ComputableTester(
-            value + ((ComputableTester) other).value);
+        assert other instanceof ComputableDouble;
+        return new ComputableDouble(
+            value + ((ComputableDouble) other).value);
     }
 
     @Override
     public Computable mul(Computable other) {
-        assert other instanceof ComputableTester;
-        return new ComputableTester(
-            value * ((ComputableTester) other).value);
+        assert other instanceof ComputableDouble;
+        return new ComputableDouble(
+            value * ((ComputableDouble) other).value);
     }
 
     @Override
     public Computable pow(Computable index) {
-        assert index instanceof ComputableTester;
-        double indexValue = ((ComputableTester) index).value;
-        return new ComputableTester(Math.pow(value, indexValue));
+        assert index instanceof ComputableDouble;
+        double indexValue = ((ComputableDouble) index).value;
+        return new ComputableDouble(Math.pow(value, indexValue));
     }
 
     @Override
     public Computable constant(BigInteger bigInteger) {
         long longVal = bigInteger.longValue();
-        return new ComputableTester(longVal);
+        return new ComputableDouble(longVal);
     }
 
     @Override
     public Computable sin() {
-        return new ComputableTester(Math.sin(value));
+        return new ComputableDouble(Math.sin(value));
     }
 
     @Override
     public Computable cos() {
-        return new ComputableTester(Math.cos(value));
+        return new ComputableDouble(Math.cos(value));
     }
 
     @Override
@@ -65,7 +67,7 @@ public class ComputableTester implements Computable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        ComputableTester that = (ComputableTester) o;
+        ComputableDouble that = (ComputableDouble) o;
         return Objects.equals(value, that.value);
     }
 

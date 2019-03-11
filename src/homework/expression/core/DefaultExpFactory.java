@@ -1,16 +1,31 @@
 package homework.expression.core;
 
+import homework.expression.core.interfaces.ExpFactory;
+import homework.expression.core.interfaces.Expression;
+import homework.expression.core.interfaces.ValueExp;
+
 import java.math.BigInteger;
 
 /**
- * Factory of ExpFactory Expression
+ * Factory of DefaultExpFactory Expression
+ * <p>
+ * whose constant is a ValueExp
+ * and pow can just be computed with a ValueExp
  * <p>
  * To get a x, use var()
  * <p>
  * To get a constant, use constant()
  */
-public class ExpFactory {
-    public static Expression mul(Expression exp1, Expression exp2) {
+public class DefaultExpFactory implements ExpFactory {
+
+    private DefaultExpFactory() {
+    }
+
+    public static DefaultExpFactory getInstance() {
+        return FactorySingleton.singleton;
+    }
+
+    public Expression mul(Expression exp1, Expression exp2) {
         if (exp1.isZero() || exp2.isZero()) {
             return constant(0);
         }
@@ -22,10 +37,9 @@ public class ExpFactory {
         }
 
         // const * const
-        if (exp1 instanceof Constant && exp2 instanceof Constant) {
-
-            return constant(((Constant) exp1).getValue().multiply(
-                ((Constant) exp2).getValue()
+        if (exp1 instanceof ValueExp && exp2 instanceof ValueExp) {
+            return constant(((ValueExp) exp1).getValue().multiply(
+                ((ValueExp) exp2).getValue()
             ));
         }
 
@@ -54,15 +68,15 @@ public class ExpFactory {
         return new Product(exp1, exp2);
     }
 
-    public static Expression mul(long value, Expression exp2) {
+    public Expression mul(long value, Expression exp2) {
         return mul(constant(value), exp2);
     }
 
-    public static Expression mul(BigInteger value, Expression exp2) {
+    public Expression mul(BigInteger value, Expression exp2) {
         return mul(constant(value), exp2);
     }
 
-    public static Expression add(Expression exp1, Expression exp2) {
+    public Expression add(Expression exp1, Expression exp2) {
         if (exp1.isZero()) {
             return exp2;
         } else if (exp2.isZero()) {
@@ -75,19 +89,20 @@ public class ExpFactory {
         return new Sum(exp1, exp2);
     }
 
-    public static Expression sub(Expression exp1, Expression exp2) {
+    public Expression sub(Expression exp1, Expression exp2) {
         return add(exp1, exp2.negate());
     }
 
-    public static Expression constant(BigInteger value) {
+    @Override
+    public ValueExp constant(BigInteger value) {
         return new Constant(value);
     }
 
-    public static Expression constant(long value) {
+    public ValueExp constant(long value) {
         return new Constant(value);
     }
 
-    public static Expression cos(Expression exp) {
+    public Expression cos(Expression exp) {
         if (exp.isZero()) {
             return constant(1);
         } else {
@@ -95,7 +110,7 @@ public class ExpFactory {
         }
     }
 
-    public static Expression sin(Expression exp) {
+    public Expression sin(Expression exp) {
         if (exp.isZero()) {
             return constant(0);
         } else {
@@ -103,29 +118,34 @@ public class ExpFactory {
         }
     }
 
-    public static Expression pow(Expression exp, Expression index) {
-        assert index instanceof Constant;
+    public Expression pow(Expression exp, BigInteger index) {
+        return pow(exp, constant(index));
+    }
+
+    public Expression pow(Expression exp, ValueExp index) {
         if (index.isOne()) {
             return exp;
         } else if (index.isZero()) {
             return constant(1);
         }
         if (exp instanceof Pow) {
-            return new Pow(((Pow) exp).getBase(), mul(((Pow) exp).getIndex(),
-                index));
+            Pow powExp = (Pow) exp;
+            return pow(powExp.getBase(),
+                powExp.getIndex().getValue().multiply(index.getValue()));
         }
         return new Pow(exp, index);
     }
 
-    public static Expression pow(Expression exp, BigInteger index) {
-        return pow(exp, constant(index));
-    }
-
-    public static Expression var() {
+    public Expression var() {
         return new VariableHolder();
     }
 
-    public static Expression diff(Expression exp) {
+    public Expression diff(Expression exp) {
         return exp.diff();
+    }
+
+    private static class FactorySingleton {
+        private static final DefaultExpFactory singleton =
+            new DefaultExpFactory();
     }
 }

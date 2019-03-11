@@ -1,5 +1,9 @@
 package homework.expression.core;
 
+import homework.expression.core.base.BaseImmutableExp;
+import homework.expression.core.interfaces.Computable;
+import homework.expression.core.interfaces.Expression;
+
 public class Sum extends BaseImmutableExp implements Expression {
 
     private Expression exp1;
@@ -20,12 +24,12 @@ public class Sum extends BaseImmutableExp implements Expression {
 
     @Override
     public Expression diff() {
-        return ExpFactory.add(exp1.diff(), exp2.diff());
+        return exp1.diff().add(exp2.diff());
     }
 
     @Override
     public Expression negate() {
-        return ExpFactory.add(exp1.negate(), exp2.negate());
+        return exp1.negate().add(exp2.negate());
     }
 
     @Override
@@ -34,12 +38,12 @@ public class Sum extends BaseImmutableExp implements Expression {
     }
 
     @Override
-    public boolean checkIsZero() {
+    public boolean uncachedIsZero() {
         return exp1.isZero() && exp2.isZero();
     }
 
     @Override
-    public boolean checkIsOne() {
+    public boolean uncachedIsOne() {
         return (exp1.isOne() && exp2.isZero()) ||
             (exp1.isZero() && exp2.isOne());
     }

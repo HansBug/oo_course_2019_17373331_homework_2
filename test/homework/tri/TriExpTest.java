@@ -1,4 +1,4 @@
-package homework.expression;
+package homework.tri;
 
 import homework.expression.parse.ExpParser;
 import org.junit.Test;

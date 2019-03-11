@@ -1,4 +1,4 @@
-package homework.expression;
+package homework.tri;
 
 import java.math.BigInteger;
 import java.util.Objects;

@@ -1,5 +1,9 @@
 package homework.expression.core;
 
+import homework.expression.core.base.BaseImmutableExp;
+import homework.expression.core.interfaces.Computable;
+import homework.expression.core.interfaces.Expression;
+
 public class Sin extends BaseImmutableExp implements Expression {
     private Expression base;
 
@@ -9,12 +13,12 @@ public class Sin extends BaseImmutableExp implements Expression {
 
     @Override
     public Expression diff() {
-        return ExpFactory.mul(ExpFactory.cos(base), base.diff());
+        return base.cos().mul(base.diff());
     }
 
     @Override
     public Expression negate() {
-        return ExpFactory.mul(-1, this);
+        return mul(constant(-1));
     }
 
     @Override
@@ -23,12 +27,12 @@ public class Sin extends BaseImmutableExp implements Expression {
     }
 
     @Override
-    public boolean checkIsZero() {
+    public boolean uncachedIsZero() {
         return base.isZero();
     }
 
     @Override
-    public boolean checkIsOne() {
+    public boolean uncachedIsOne() {
         return false;
     }
 

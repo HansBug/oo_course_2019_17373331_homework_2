@@ -1,6 +1,6 @@
 package homework.expression.parse.matcher;
 
-import homework.expression.core.Expression;
+import homework.expression.core.interfaces.Expression;
 
 import java.util.LinkedList;
 

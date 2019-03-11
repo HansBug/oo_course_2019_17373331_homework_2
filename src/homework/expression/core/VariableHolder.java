@@ -1,8 +1,12 @@
 package homework.expression.core;
 
+import homework.expression.core.base.BaseExp;
+import homework.expression.core.interfaces.Computable;
+import homework.expression.core.interfaces.Expression;
+
 import java.util.Objects;
 
-public class VariableHolder implements Expression {
+public class VariableHolder extends BaseExp implements Expression {
 
     private Expression hold;
 
@@ -29,7 +33,7 @@ public class VariableHolder implements Expression {
     @Override
     public Expression diff() {
         if (isEmpty()) {
-            return ExpFactory.constant(1);
+            return constant(1);
         } else {
             return hold.diff();
         }
@@ -37,7 +41,7 @@ public class VariableHolder implements Expression {
 
     @Override
     public Expression negate() {
-        return ExpFactory.mul(ExpFactory.constant(-1), this);
+        return mul(constant(-1));
     }
 
     @Override

@@ -1,7 +1,7 @@
 package homework;
 
-import homework.expression.core.ComputableTester;
-import homework.expression.core.Expression;
+import homework.expression.ComputableDouble;
+import homework.expression.core.interfaces.Expression;
 import homework.expression.parse.ExpParser;
 import org.junit.Test;
 
@@ -220,11 +220,11 @@ public class MainTest {
         if (verbose) {
             System.out.println("actualExp = " + actualExp);
         }
-        ComputableTester tester = new ComputableTester(97);
-        ComputableTester expected =
-            (ComputableTester) expectedExp.compute(tester);
-        ComputableTester actual =
-            (ComputableTester) actualExp.compute(tester);
+        ComputableDouble tester = new ComputableDouble(97);
+        ComputableDouble expected =
+            (ComputableDouble) expectedExp.compute(tester);
+        ComputableDouble actual =
+            (ComputableDouble) actualExp.compute(tester);
 
         try {
             assertEquals(expected, actual);

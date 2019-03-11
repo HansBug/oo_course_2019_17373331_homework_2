@@ -1,7 +1,8 @@
 package homework.expression.parse.matcher;
 
-import homework.expression.core.ExpFactory;
-import homework.expression.core.Expression;
+import homework.expression.core.DefaultExpFactory;
+import homework.expression.core.interfaces.ExpFactory;
+import homework.expression.core.interfaces.Expression;
 import jdk.nashorn.internal.runtime.regexp.joni.exception.ValueException;
 
 import java.math.BigInteger;
@@ -16,6 +17,7 @@ public class FactorPattern {
         "\\(" + BLANK_PATTERN + "x" + BLANK_PATTERN + "\\)";
     private static final String COS_PATTERN = "cos" + BLANK_PATTERN +
         "\\(" + BLANK_PATTERN + "x" + BLANK_PATTERN + "\\)";
+    private static final ExpFactory FACTORY = DefaultExpFactory.getInstance();
     private String rePatternStr;
     private String factorPatternStr;
     private Pattern rePattern;
@@ -24,8 +26,7 @@ public class FactorPattern {
     private int indexGroupInd = 0;
     private BigInteger defaultIndex = BigInteger.ONE;
     private BigInteger defaultCoef = BigInteger.ONE;
-
-    private Expression coreFactorExp = ExpFactory.var();
+    private Expression coreFactorExp = FACTORY.var();
 
     private FactorPattern(String factorPatternStr,
                           boolean setDefaultIndexToZero) {
@@ -69,8 +70,8 @@ public class FactorPattern {
     }
 
     Expression getFactorExp() {
-        return ExpFactory.mul(getCoef(),
-            ExpFactory.pow(coreFactorExp, getIndex()));
+        return coreFactorExp.pow(coreFactorExp.constant(getIndex()))
+            .mul(coreFactorExp.constant(getCoef()));
     }
 
     public String getFactorPatternStr() {
@@ -89,7 +90,7 @@ public class FactorPattern {
                     builder.append(BIG_INT_PATTERN);
                     coefGroupInd = groupCount;
                     groupCount += 1;
-                    coreFactorExp = ExpFactory.constant(1);
+                    coreFactorExp = FACTORY.constant(1);
                     break;
                 }
                 case 'i': {
@@ -106,7 +107,7 @@ public class FactorPattern {
                 }
                 case 'x': {
                     builder.append("x");
-                    coreFactorExp = ExpFactory.var();
+                    coreFactorExp = FACTORY.var();
                     break;
                 }
                 case '^': {
@@ -119,12 +120,12 @@ public class FactorPattern {
                 }
                 case 'S': {
                     builder.append(SIN_PATTERN);
-                    coreFactorExp = ExpFactory.sin(ExpFactory.var());
+                    coreFactorExp = FACTORY.var().sin();
                     break;
                 }
                 case 'C': {
                     builder.append(COS_PATTERN);
-                    coreFactorExp = ExpFactory.cos(ExpFactory.var());
+                    coreFactorExp = FACTORY.var().cos();
                     break;
                 }
                 default: {

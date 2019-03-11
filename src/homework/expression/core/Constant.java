@@ -1,9 +1,14 @@
 package homework.expression.core;
 
+import homework.expression.core.base.BaseImmutableExp;
+import homework.expression.core.interfaces.Computable;
+import homework.expression.core.interfaces.Expression;
+import homework.expression.core.interfaces.ValueExp;
+
 import java.math.BigInteger;
 import java.util.Objects;
 
-class Constant extends BaseImmutableExp implements Expression {
+class Constant extends BaseImmutableExp implements ValueExp {
 
     private BigInteger value;
 
@@ -24,11 +29,11 @@ class Constant extends BaseImmutableExp implements Expression {
     }
 
     public Expression diff() {
-        return new Constant(0);
+        return constant(0);
     }
 
     public Expression negate() {
-        return new Constant(value.negate());
+        return constant(value.negate());
     }
 
     @Override
@@ -37,12 +42,12 @@ class Constant extends BaseImmutableExp implements Expression {
     }
 
     @Override
-    public boolean checkIsOne() {
+    public boolean uncachedIsOne() {
         return BigInteger.ONE.equals(value);
     }
 
     @Override
-    public boolean checkIsZero() {
+    public boolean uncachedIsZero() {
         return BigInteger.ZERO.equals(value);
     }
 

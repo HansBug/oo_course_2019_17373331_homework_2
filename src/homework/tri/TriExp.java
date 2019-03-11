@@ -1,4 +1,4 @@
-package homework.expression;
+package homework.tri;
 
 import javafx.util.Pair;
 
