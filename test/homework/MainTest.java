@@ -146,6 +146,9 @@ public class MainTest {
         assertExpDerEquals("+ ++0*x^2*sin (x)^3", "0");
 
         assertExpDerEquals("sin(x)^3+cos(x)^2*sin(x)", "cos(x)");
+
+        assertExpDerEquals("2*sin(x)^-2 + 2*cos(x)^-2",
+            "-4*sin(x)^-3*cos(x) + -4*cos(x)^-3*-1*sin(x)");
     }
 
     @Test
@@ -231,6 +234,14 @@ public class MainTest {
         try {
             assertEquals(expected, actual);
         } catch (AssertionError e) {
+            double a = Math.abs(expected.getValue());
+            double b = Math.abs(expected.getValue());
+            if (Math.max(
+                Math.abs((a - b) / Math.min(a, b)),
+                Math.abs(a - b)
+            ) < 1e-8) {
+                return;
+            }
             System.out.println("---------------");
             System.out.println("wrong:");
             System.out.println("expected = " + expected);

@@ -39,6 +39,10 @@ public class TriExpTest {
         assertExpStrEquals("1-cos(x)^2", "sin(x)^2");
         assertExpStrEquals("+x^2*cos(x)^3 - x^2*cos(x)",
             "-x^2*sin(x)^2*cos(x)");
+
+        assertExpStrEquals("sin(x)^2-2*sin(x)^4+sin(x)^6",
+            "sin(x)^2*cos(x)^4");
+
         assertExpStrEquals("sin(x)-sin(x)^3",
             "sin(x)*cos(x)^2");
 
@@ -46,6 +50,34 @@ public class TriExpTest {
             "sin(x)");
         assertExpStrEquals("2*sin(x)^3*cos(x)^2 + sin(x)^5 + sin(x)*cos(x)^4",
             "sin(x)");
+
+        // index is -1
+        assertExpStrEquals("3*sin(x)^-1*cos(x)+sin(x)*cos(x)^-1",
+            "3*sin(x)^-1*cos(x)+sin(x)*cos(x)^-1");
+
+        // index is -2
+        assertExpStrEquals("sin(x)^-2+3",
+            "3+sin(x)^-2");
+        assertExpStrEquals("sin(x)^-4*cos(x)^-2+sin(x)^-2*cos(x)^-4",
+            "sin(x)^-4*cos(x)^-4");
+        assertExpStrEquals("2*sin(x)^-2 + 2*cos(x)^-2",
+            "2*sin(x)^-2*cos(x)^-2");
+
+        assertExpStrEquals("cos(x)^-4 + cos(x)^-2*sin(x)^-2",
+            "sin(x)^-2*cos(x)^-4");
+        assertExpStrEquals("sin(x)^-4 + sin(x)^-2*cos(x)^-2",
+            "sin(x)^-4*cos(x)^-2");
+        assertExpStrEquals("cos(x)^-4 + cos(x)^-2*sin(x)^-2 +" +
+                "sin(x)^-4 + sin(x)^-2*cos(x)^-2",
+            "sin(x)^-4*cos(x)^-4");
+        assertExpStrEquals("cos(x)^-4 + sin(x)^-4 + 2*cos(x)^-2*sin(x)^-2",
+            "cos(x)^-4*sin(x)^-4");
+
+
+    }
+
+    @Test
+    public void mergeTrigo2() {
         try {
             assertExpStrEquals("sin(x)^4 + cos(x)^2*sin(x)^2 + cos(x)^4",
                 "sin(x)^2+cos(x)^4");

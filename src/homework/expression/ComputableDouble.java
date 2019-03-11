@@ -17,6 +17,10 @@ public class ComputableDouble implements Computable {
         this((double) value);
     }
 
+    public double getValue() {
+        return value;
+    }
+
     @Override
     public Computable add(Computable other) {
         assert other instanceof ComputableDouble;
