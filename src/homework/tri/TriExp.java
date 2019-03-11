@@ -134,6 +134,12 @@ public class TriExp {
 
     private boolean mergeTrigoOnce(boolean onlyMergeThoseMustMerged,
                                    boolean isCos) {
+        return mergeTrigoOnce(onlyMergeThoseMustMerged, isCos, termCoefMap);
+    }
+
+    private boolean mergeTrigoOnce(boolean onlyMergeThoseMustMerged,
+                                   boolean isCos,
+                                   HashMap<TriIndex, BigInteger> termCoefMap) {
         boolean modified = false;
         for (TriIndex curIndex : new HashSet<>(termCoefMap.keySet())) {
             TriIndex curCos2Index;
@@ -193,7 +199,7 @@ public class TriExp {
             }
 
             updateMap(curRootIndex, curSin2Index, curCos2Index, resRootCoef,
-                resSin2Coef, resCos2Coef);
+                resSin2Coef, resCos2Coef, termCoefMap);
 
             // update modified
             modified = true;
@@ -203,7 +209,8 @@ public class TriExp {
 
     private void updateMap(TriIndex curRootIndex, TriIndex curSin2Index,
                            TriIndex curCos2Index, BigInteger resRootCoef,
-                           BigInteger resSin2Coef, BigInteger resCos2Coef) {
+                           BigInteger resSin2Coef, BigInteger resCos2Coef,
+                           HashMap<TriIndex, BigInteger> termCoefMap) {
         if (resCos2Coef == null) {
             termCoefMap.remove(curCos2Index);
         } else {
@@ -223,6 +230,19 @@ public class TriExp {
                 && !mergeTrigoOnce(true, false)) {
                 break;
             }
+        }
+        HashMap<TriIndex, BigInteger> copy = new HashMap<>(termCoefMap);
+        while (true) {
+            if (!mergeTrigoOnce(false, true,
+                copy)
+                && !mergeTrigoOnce(false, false,
+                copy)) {
+                break;
+            }
+        }
+        if (getExpStringOf(copy).length() <
+            getExpStringOf(termCoefMap).length()) {
+            termCoefMap = copy;
         }
     }
 
@@ -288,8 +308,6 @@ public class TriExp {
     @Override
     public String toString() {
         mergeTrigo();
-        System.out.println("getExpStringOf(termCoefMap) = "
-            + getExpStringOf(termCoefMap));
         return getExpStringOf(termCoefMap);
     }
 }

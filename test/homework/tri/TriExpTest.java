@@ -71,7 +71,7 @@ public class TriExpTest {
                 "sin(x)^-4 + sin(x)^-2*cos(x)^-2",
             "sin(x)^-4*cos(x)^-4");
         assertExpStrEquals("cos(x)^-4 + sin(x)^-4 + 2*cos(x)^-2*sin(x)^-2",
-            "cos(x)^-4*sin(x)^-4");
+            "sin(x)^-4*cos(x)^-4");
 
 
     }
