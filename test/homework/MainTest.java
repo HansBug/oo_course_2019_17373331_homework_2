@@ -144,6 +144,8 @@ public class MainTest {
         assertExpWrongFormat("2*+sin(x)+4*cos(x)");
         assertExpDerEquals("cos (x) + sin (x)", "-sin(x)+cos(x)");
         assertExpDerEquals("+ ++0*x^2*sin (x)^3", "0");
+
+        assertExpDerEquals("sin(x)^3+cos(x)^2*sin(x)", "cos(x)");
     }
 
     @Test

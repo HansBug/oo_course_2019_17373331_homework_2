@@ -93,9 +93,14 @@ public class TriExp {
         }
     }
 
-    HashSet<TriIndex> getTrigoIndSet(boolean isCos) {
+    /**
+     * return a set whose index = oriInd - (0, 2, 0) (or (0, 0, 2))
+     *
+     * @param isCos if true, (a, b, c-2) as removed cos^2, otherwise (a, b-2, c)
+     * @return the hash set
+     */
+    private HashSet<TriIndex> getTrigoIndSet(boolean isCos) {
         HashSet<TriIndex> set = new HashSet<>(termCoefMap.size());
-        BigInteger bigTwo = BigInteger.valueOf(2);
         for (TriIndex triIndex :
             termCoefMap.keySet()) {
             BigInteger targetInd;
@@ -120,35 +125,73 @@ public class TriExp {
     private boolean mergeTrigoOnce() {
         HashSet<TriIndex> cosSet = getTrigoIndSet(true);
         HashSet<TriIndex> sinSet = getTrigoIndSet(false);
+
+        // when here's a term both in cosSet & sinSet
+        // e.g. term T = (a, b, c)
+        // (a, b-2 ,c) in sinSet
+        // (a, b, c-2) in cosSet
+        // when merged it with (a, b-2, c+2)
+        // it shouldn't be merged again with (a, b+2, c-2)
+        // until next call to the method.
+        // so let a visCosSet record it.
+        HashSet<TriIndex> visCosSet = new HashSet<>(cosSet.size());
         boolean modified = false;
-        for (TriIndex targetIndex : cosSet) {
-            if (sinSet.contains(targetIndex)) {
-                TriIndex sinOriIndex = targetIndex.add(0, 2, 0);
-                TriIndex cosOriIndex = targetIndex.add(0, 0, 2);
+        for (TriIndex curRootIndex : cosSet) {
+            if (sinSet.contains(curRootIndex)) {
+
+                // visited current index as a sin index
+                if (visCosSet.contains(curRootIndex)) {
+                    continue;
+                }
+
+                // should merge
+                TriIndex sinOriIndex = curRootIndex.add(0, 2, 0);
+                TriIndex cosOriIndex = curRootIndex.add(0, 0, 2);
                 BigInteger sinCoef = termCoefMap.get(sinOriIndex);
                 BigInteger cosCoef = termCoefMap.get(cosOriIndex);
+
+                // check abs & merge
                 if (sinCoef.abs().compareTo(cosCoef.abs()) > 0) {
                     // remove cos
                     addAppend(sinOriIndex, cosCoef.negate());
                     termCoefMap.remove(cosOriIndex);
-                    addAppend(targetIndex, cosCoef);
+                    addAppend(curRootIndex, cosCoef);
                 } else {
                     // remove sin
                     addAppend(cosOriIndex, sinCoef.negate());
                     termCoefMap.remove(sinOriIndex);
-                    addAppend(targetIndex, sinCoef);
+                    addAppend(curRootIndex, sinCoef);
                 }
+
+                // update modified
                 modified = true;
+
+                // remove sin from cos
+                TriIndex sinOriIndInCosSetIndex = sinOriIndex.add(0, 0, -2);
+                TriIndex cosOriIndInSinSetIndex = cosOriIndex.add(0, -2, 0);
+                if (cosSet.contains(sinOriIndInCosSetIndex)) {
+                    // can not modify cosSet
+                    visCosSet.add(sinOriIndInCosSetIndex);
+                }
+                sinSet.remove(cosOriIndInSinSetIndex);
             }
         }
         return modified;
     }
 
-    void mergeTrigo() {
+    private void mergeTrigo() {
         while (true) {
-            if (!mergeTrigoOnce()
-                && !mergeTrigoAndRootOnce(true)
-                && !mergeTrigoAndRootOnce(false)) {
+            if (!mergeTrigoOnce()) {
+                break;
+            }
+        }
+        while (true) {
+            if (!mergeTrigoAndRootOnce(true)) {
+                break;
+            }
+        }
+        while (true) {
+            if (!mergeTrigoAndRootOnce(false)) {
                 break;
             }
         }
@@ -157,7 +200,7 @@ public class TriExp {
     /**
      * terms like 1-sin^2 = cos^2
      */
-    boolean mergeTrigoAndRootOnce(boolean isCos) {
+    private boolean mergeTrigoAndRootOnce(boolean isCos) {
         HashSet<TriIndex> trigoSet = getTrigoIndSet(isCos);
         boolean modified = false;
         for (TriIndex targetIndex : trigoSet) {
@@ -183,9 +226,14 @@ public class TriExp {
         return modified;
     }
 
-    @Override
-    public String toString() {
-        mergeTrigo();
+
+    /**
+     * get a string from giving map copy
+     *
+     * @param termCoefMap a hash map
+     * @return a string
+     */
+    private String getExpStringOf(HashMap<TriIndex, BigInteger> termCoefMap) {
         StringBuilder builder = new StringBuilder();
         List<Pair<TriIndex, BigInteger>> list =
             new ArrayList<>(termCoefMap.size());
@@ -206,5 +254,11 @@ public class TriExp {
             res = res.substring(1);
         }
         return res;
+    }
+
+    @Override
+    public String toString() {
+        mergeTrigo();
+        return getExpStringOf(termCoefMap);
     }
 }

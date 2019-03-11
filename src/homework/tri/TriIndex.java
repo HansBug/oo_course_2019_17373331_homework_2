@@ -21,6 +21,15 @@ public class TriIndex {
         this.ind3 = BigInteger.valueOf(ind3);
     }
 
+    @Override
+    public String toString() {
+        return "TriIndex{" +
+            "ind1=" + ind1 +
+            ", ind2=" + ind2 +
+            ", ind3=" + ind3 +
+            '}';
+    }
+
     boolean isZeroIndex() {
         return ind1.equals(BigInteger.ZERO) &
             ind2.equals(BigInteger.ZERO) &
