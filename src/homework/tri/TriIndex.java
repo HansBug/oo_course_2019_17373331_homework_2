@@ -1,24 +1,27 @@
 package homework.tri;
 
+import homework.util.Triplet;
+
 import java.math.BigInteger;
 import java.util.Objects;
 
-public class TriIndex {
+public class TriIndex extends Triplet<BigInteger, BigInteger, BigInteger> {
     static final TriIndex ZERO = new TriIndex(0, 0, 0);
-    private BigInteger ind1;
-    private BigInteger ind2;
-    private BigInteger ind3;
+    private final BigInteger ind1;
+    private final BigInteger ind2;
+    private final BigInteger ind3;
 
     TriIndex(BigInteger ind1, BigInteger ind2, BigInteger ind3) {
-        this.ind1 = ind1;
-        this.ind2 = ind2;
-        this.ind3 = ind3;
+        super(ind1, ind2, ind3);
+        this.ind1 = getFirst();
+        this.ind2 = getSecond();
+        this.ind3 = getThird();
     }
 
     private TriIndex(long ind1, long ind2, long ind3) {
-        this.ind1 = BigInteger.valueOf(ind1);
-        this.ind2 = BigInteger.valueOf(ind2);
-        this.ind3 = BigInteger.valueOf(ind3);
+        this(BigInteger.valueOf(ind1),
+            BigInteger.valueOf(ind2),
+            BigInteger.valueOf(ind3));
     }
 
     private static String getFactorStringOf(BigInteger index,

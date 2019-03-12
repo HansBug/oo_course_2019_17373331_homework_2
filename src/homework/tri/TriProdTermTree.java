@@ -2,7 +2,7 @@ package homework.tri;
 
 import homework.expression.core.interfaces.Computable;
 import homework.expression.core.interfaces.Expression;
-import javafx.util.Pair;
+import homework.util.Pair;
 
 import java.math.BigInteger;
 import java.util.LinkedList;

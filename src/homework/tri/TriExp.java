@@ -1,5 +1,6 @@
 package homework.tri;
 
+import homework.util.Triplet;
 import javafx.util.Pair;
 import jdk.nashorn.internal.runtime.regexp.joni.exception.ValueException;
 
@@ -158,11 +159,12 @@ public class TriExp {
             BigInteger resRootCoef;
 
             // check abs & merge
-            TriIndex mergedTriCoef = getOptimizedCoefs(resSin2Coef, resCos2Coef,
-                curRootIndex, curSin2Index, curCos2Index, level);
-            resRootCoef = mergedTriCoef.getVarInd();
-            resSin2Coef = mergedTriCoef.getSinInd();
-            resCos2Coef = mergedTriCoef.getCosInd();
+            Triplet<BigInteger, BigInteger, BigInteger> mergedTriCoef =
+                getOptimizedCoefs(resSin2Coef, resCos2Coef,
+                    curRootIndex, curSin2Index, curCos2Index, level);
+            resRootCoef = mergedTriCoef.getFirst();
+            resSin2Coef = mergedTriCoef.getSecond();
+            resCos2Coef = mergedTriCoef.getThird();
 
 
             if ((resCos2Coef == null || resCos2Coef.equals(cos2Coef)) &&
@@ -194,12 +196,10 @@ public class TriExp {
      *                  if 100: not must merge, merge depend on the length
      * @return though its a TriIndex, it contains coefs.
      */
-    private TriIndex getOptimizedCoefs(BigInteger sin2Coef,
-                                       BigInteger cos2Coef,
-                                       TriIndex rootIndex,
-                                       TriIndex sinIndex,
-                                       TriIndex cosIndex,
-                                       int level) {
+    private Triplet<BigInteger, BigInteger, BigInteger> getOptimizedCoefs(
+        BigInteger sin2Coef, BigInteger cos2Coef,
+        TriIndex rootIndex, TriIndex sinIndex, TriIndex cosIndex,
+        int level) {
 
         BigInteger resRootCoef;
         BigInteger resSin2Coef;
@@ -252,7 +252,7 @@ public class TriExp {
                 }
             }
 
-            return new TriIndex(resRootCoef, resSin2Coef, resCos2Coef);
+            return new Triplet<>(resRootCoef, resSin2Coef, resCos2Coef);
 
         } else {
             throw new ValueException("wrong level:" + level);
