@@ -1,15 +1,15 @@
 package homework.expression.parse;
 
-import homework.expression.core.DefaultExpFactory;
 import homework.expression.core.interfaces.ExpFactory;
 import homework.expression.core.interfaces.Expression;
+import homework.expression.multi.MultiExpFactory;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ExpParser {
 
-    private static final ExpFactory FACTORY = DefaultExpFactory.getInstance();
+    private static final ExpFactory FACTORY = MultiExpFactory.getInstance();
 
     public static ExpParser getInstance() {
         return ExpParserSingleton.singleton;

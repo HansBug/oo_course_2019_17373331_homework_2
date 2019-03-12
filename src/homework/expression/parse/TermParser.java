@@ -1,8 +1,8 @@
 package homework.expression.parse;
 
-import homework.expression.core.DefaultExpFactory;
 import homework.expression.core.interfaces.ExpFactory;
 import homework.expression.core.interfaces.Expression;
+import homework.expression.multi.MultiExpFactory;
 import homework.expression.parse.matcher.FactorMultiMatcher;
 
 import java.util.regex.Matcher;
@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 public class TermParser {
 
-    private static final ExpFactory FACTORY = DefaultExpFactory.getInstance();
+    private static final ExpFactory FACTORY = MultiExpFactory.getInstance();
     private String buffer;
 
     /**

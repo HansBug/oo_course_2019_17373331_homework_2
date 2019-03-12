@@ -110,34 +110,13 @@ public class TriExpTest {
 
     @Test
     public void mergeTrigo2() {
-        try {
 
-            assertExpStrEquals("sin(x)^4 + cos(x)^2*sin(x)^2 + cos(x)^4",
-                "sin(x)^2+cos(x)^4");
+        assertExpStrEquals("sin(x)^4 + cos(x)^2*sin(x)^2 + cos(x)^4",
+            new String[]{
+                "sin(x)^2+cos(x)^4",
+                "cos(x)^2+sin(x)^4",
+                "cos(x)^4+sin(x)^2"});
 
-        } catch (ComparisonFailure e1) {
-            try {
-
-                assertExpStrEquals("sin(x)^4 + cos(x)^2*sin(x)^2 + "
-                        + "cos(x)^4",
-                    "cos(x)^2+sin(x)^4");
-
-            } catch (ComparisonFailure e) {
-                try {
-
-                    assertExpStrEquals("sin(x)^4 + cos(x)^2*sin(x)^2 + "
-                            + "cos(x)^4",
-                        "cos(x)^4+sin(x)^2");
-
-                } catch (ComparisonFailure e2) {
-                    System.out.println("Failed when expected both");
-                    System.out.println("sin(x)^2+cos(x)^4");
-                    System.out.println("and");
-                    System.out.println("cos(x)^2+sin(x)^4");
-                    throw e2;
-                }
-            }
-        }
         assertExpStrEquals("cos(x)^4 + sin(x)^2*cos(x)^2 + sin(x)^4",
             new String[]{
                 "sin(x)^2+cos(x)^4",
