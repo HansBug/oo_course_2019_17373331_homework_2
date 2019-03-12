@@ -5,6 +5,7 @@ import homework.util.Triplet;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -116,7 +117,9 @@ public class TriExp {
                                    HashMap<TriIndex, BigInteger> termCoefMap,
                                    int level) {
         boolean modified = false;
-        for (TriIndex curIndex : new HashSet<>(termCoefMap.keySet())) {
+        List<TriIndex> keyList = new ArrayList<>(termCoefMap.keySet());
+        Collections.shuffle(keyList);
+        for (TriIndex curIndex : (keyList)) {
             TriIndex curCos2Index;
             TriIndex curRootIndex;
             TriIndex curSin2Index;
@@ -275,67 +278,65 @@ public class TriExp {
         termCoefMap.put(curRootIndex, resRootCoef);
     }
 
-    private void mergeTrigo() {
+    private void mergeTrigoOnMap(
+        HashMap<TriIndex, BigInteger> map,
+        boolean onlyMergeThoseMustMerged, int level) {
         while (true) {
-            if (!mergeTrigoOnce(true, true, 0)
-                && !mergeTrigoOnce(true, false, 0)) {
+            if (!mergeTrigoOnce(onlyMergeThoseMustMerged, true,
+                map, level)
+                && !mergeTrigoOnce(onlyMergeThoseMustMerged, false,
+                map, level)) {
                 break;
             }
         }
+    }
 
-        // greater level
-        while (true) {
-            if (!mergeTrigoOnce(true, true, 10)
-                && !mergeTrigoOnce(true, false, 10)) {
-                break;
-            }
-        }
+    private HashMap<TriIndex, BigInteger> mergeTrigoRandomAndGetMap() {
+        HashMap<TriIndex, BigInteger> termCoefMap =
+            new HashMap<>(this.termCoefMap);
 
-        while (true) {
-            if (!mergeTrigoOnce(true, true, 100)
-                && !mergeTrigoOnce(true, false, 100)) {
-                break;
-            }
-        }
+        mergeTrigoOnMap(termCoefMap, true, 0);
+        mergeTrigoOnMap(termCoefMap, true, 10);
+        mergeTrigoOnMap(termCoefMap, true, 100);
+
 
         HashMap<TriIndex, BigInteger> copy = new HashMap<>(termCoefMap);
-        while (true) {
-            if (!mergeTrigoOnce(false, true,
-                copy, 0)
-                && !mergeTrigoOnce(false, false,
-                copy, 0)) {
-                break;
-            }
-        }
-        if (getExpStringOf(copy).length() <
-            getExpStringOf(termCoefMap).length()) {
-            termCoefMap = copy;
-        }
-        while (true) {
-            if (!mergeTrigoOnce(false, true,
-                copy, 10)
-                && !mergeTrigoOnce(false, false,
-                copy, 10)) {
-                break;
-            }
-        }
+
+        mergeTrigoOnMap(copy, false, 0);
+
         if (getExpStringOf(copy).length() <
             getExpStringOf(termCoefMap).length()) {
             termCoefMap = copy;
         }
 
-        while (true) {
-            if (!mergeTrigoOnce(false, true,
-                copy, 100)
-                && !mergeTrigoOnce(false, false,
-                copy, 100)) {
-                break;
-            }
-        }
+        mergeTrigoOnMap(copy, false, 10);
+
         if (getExpStringOf(copy).length() <
             getExpStringOf(termCoefMap).length()) {
             termCoefMap = copy;
         }
+
+        mergeTrigoOnMap(copy, false, 100);
+
+        if (getExpStringOf(copy).length() <
+            getExpStringOf(termCoefMap).length()) {
+            termCoefMap = copy;
+        }
+
+        return termCoefMap;
+    }
+
+    private String mergeTrigoAndGetBetterExpString() {
+        HashMap<TriIndex, BigInteger> better = mergeTrigoRandomAndGetMap();
+        String betterStr = getExpStringOf(better);
+        for (int i = 0; i < 50; i++) {
+            HashMap<TriIndex, BigInteger> once = mergeTrigoRandomAndGetMap();
+            String onceStr = getExpStringOf(once);
+            if (onceStr.length() < betterStr.length()) {
+                betterStr = onceStr;
+            }
+        }
+        return betterStr;
     }
 
     /**
@@ -373,7 +374,6 @@ public class TriExp {
 
     @Override
     public String toString() {
-        mergeTrigo();
-        return getExpStringOf(termCoefMap);
+        return mergeTrigoAndGetBetterExpString();
     }
 }

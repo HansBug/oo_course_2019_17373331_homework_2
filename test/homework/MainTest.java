@@ -184,6 +184,23 @@ public class MainTest {
                 " +x^ 1 + + x^ 1-x^ 1- x^ 1 -x^ 1 - x^ 1--x^ 1- -x^ 1--" +
                 " x^ 1 --x^ 1 ",
             "12", false);
+    }
+
+    @Test
+    public void getLongerHundredLevelAns() {
+        StringBuilder inputBuilder = new StringBuilder();
+        StringBuilder expBuilder = new StringBuilder();
+        for (int i = 0; i < 500; i++) {
+            inputBuilder.append(String.format("+ sin(x)^%d", 2 * i));
+            expBuilder.append(String.format("+ %d * sin(x) ^ %d *cos(x)",
+                (2 * i), (2 * i - 1)));
+        }
+        assertExpDerEquals(inputBuilder.toString(), expBuilder.toString(),
+            false);
+    }
+
+    @Test
+    public void getLongerThousandLevelAns() {
         StringBuilder inputBuilder = new StringBuilder();
         StringBuilder expBuilder = new StringBuilder();
         for (int i = 0; i < 5000; i++) {
