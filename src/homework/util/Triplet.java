@@ -1,25 +1,25 @@
 package homework.util;
 
 public class Triplet<T, K, V> {
-    private T type;
-    private K key;
-    private V value;
+    private T first;
+    private K second;
+    private V third;
 
-    public Triplet(T t, K k, V v) {
-        this.type = t;
-        this.key = k;
-        this.value = v;
+    public Triplet(T first, K second, V third) {
+        this.first = first;
+        this.second = second;
+        this.third = third;
     }
 
     public T getFirst() {
-        return type;
+        return first;
     }
 
     public K getSecond() {
-        return key;
+        return second;
     }
 
     public V getThird() {
-        return value;
+        return third;
     }
 }

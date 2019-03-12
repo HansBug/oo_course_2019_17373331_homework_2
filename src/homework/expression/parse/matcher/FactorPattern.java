@@ -3,7 +3,6 @@ package homework.expression.parse.matcher;
 import homework.expression.core.DefaultExpFactory;
 import homework.expression.core.interfaces.ExpFactory;
 import homework.expression.core.interfaces.Expression;
-import jdk.nashorn.internal.runtime.regexp.joni.exception.ValueException;
 
 import java.math.BigInteger;
 import java.util.regex.Matcher;
@@ -63,7 +62,7 @@ public class FactorPattern {
         String striped = polyPatternStr.replaceAll("\\s", "");
         Pattern checkPattern = Pattern.compile("^[c+*x^iSC]+$");
         if (!checkPattern.matcher(striped).find()) {
-            throw new ValueException("Bad expression pattern str: " +
+            throw new Error("Bad expression pattern str: " +
                 polyPatternStr);
         }
         return new FactorPattern(polyPatternStr, setDefaultIndexToZero);
@@ -129,7 +128,7 @@ public class FactorPattern {
                     break;
                 }
                 default: {
-                    throw new ValueException("Unexpected char \'" + c + "\'");
+                    throw new Error("Unexpected char \'" + c + "\'");
                 }
             }
             builder.append(BLANK_PATTERN);

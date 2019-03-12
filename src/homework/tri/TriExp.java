@@ -1,8 +1,7 @@
 package homework.tri;
 
+import homework.util.Pair;
 import homework.util.Triplet;
-import javafx.util.Pair;
-import jdk.nashorn.internal.runtime.regexp.joni.exception.ValueException;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -255,7 +254,7 @@ public class TriExp {
             return new Triplet<>(resRootCoef, resSin2Coef, resCos2Coef);
 
         } else {
-            throw new ValueException("wrong level:" + level);
+            throw new Error("wrong level:" + level);
         }
     }
 
