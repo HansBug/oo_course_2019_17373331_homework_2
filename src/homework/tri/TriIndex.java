@@ -21,13 +21,40 @@ public class TriIndex {
         this.ind3 = BigInteger.valueOf(ind3);
     }
 
+    private static String getFactorStringOf(BigInteger index,
+                                            String factorStr) {
+        if (index.equals(BigInteger.ZERO)) {
+            return "";
+        } else if (index.equals(BigInteger.ONE)) {
+            return factorStr;
+        } else {
+            return factorStr + "^" + index.toString();
+        }
+    }
+
     @Override
     public String toString() {
-        return "TriIndex{" +
-            "ind1=" + ind1 +
-            ", ind2=" + ind2 +
-            ", ind3=" + ind3 +
-            '}';
+        StringBuilder builder = new StringBuilder();
+        String var = getFactorStringOf(getVarInd(), "x");
+        String sin = getFactorStringOf(getSinInd(), "sin(x)");
+        String cos = getFactorStringOf(getCosInd(), "cos(x)");
+        if (!var.equals("")) {
+            builder.append("*");
+            builder.append(var);
+        }
+        if (!sin.equals("")) {
+            builder.append("*");
+            builder.append(sin);
+        }
+        if (!cos.equals("")) {
+            builder.append("*");
+            builder.append(cos);
+        }
+        String res = builder.toString();
+        if (!res.isEmpty()) {
+            res = res.substring(1);
+        }
+        return res;
     }
 
     boolean isZeroIndex() {

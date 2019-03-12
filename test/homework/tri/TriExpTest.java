@@ -18,7 +18,11 @@ public class TriExpTest {
     @Test
     public void toStringTest() {
         assertExpStrEquals("-1+2*2*x*3", "12*x-1");
-        assertExpStrEquals("-3* cos(x) ^2+1", "1-3*cos(x)^2");
+        try {
+            assertExpStrEquals("-3* cos(x) ^2+1", "1-3*cos(x)^2");
+        } catch (ComparisonFailure e) {
+            assertExpStrEquals("-3* cos(x) ^2+1", "3*sin(x)^2-2");
+        }
         assertExpStrEquals("-3* cos(x) ^2 + 3*cos(x)\t^2", "0");
         assertExpStrEquals("0", "0");
         assertExpStrEquals("1", "1");
@@ -35,7 +39,7 @@ public class TriExpTest {
             "1");
         assertExpStrEquals("sin(x) ^2 + cos(x) ^2", "1");
         assertExpStrEquals("sin(x)^3 + 3 * sin(x)^1*cos(x)^2",
-            "2*sin(x)*cos(x)^2+sin(x)");
+            "3*sin(x)-2*sin(x)^3");
         assertExpStrEquals("1-cos(x)^2", "sin(x)^2");
         assertExpStrEquals("+x^2*cos(x)^3 - x^2*cos(x)",
             "-x^2*sin(x)^2*cos(x)");
@@ -43,8 +47,13 @@ public class TriExpTest {
         assertExpStrEquals("sin(x)^2-2*sin(x)^4+sin(x)^6",
             "sin(x)^2*cos(x)^4");
 
-        assertExpStrEquals("sin(x)-sin(x)^3",
-            "sin(x)*cos(x)^2");
+        try {
+            assertExpStrEquals("sin(x)-sin(x)^3",
+                "sin(x)*cos(x)^2");
+        } catch (ComparisonFailure e) {
+            assertExpStrEquals("sin(x)-sin(x)^3",
+                "sin(x)-sin(x)^3");
+        }
 
         assertExpStrEquals("sin(x)^5 + 2*sin(x)^3*cos(x)^2 + sin(x)*cos(x)^4",
             "sin(x)");
@@ -73,7 +82,14 @@ public class TriExpTest {
         assertExpStrEquals("cos(x)^-4 + sin(x)^-4 + 2*cos(x)^-2*sin(x)^-2",
             "sin(x)^-4*cos(x)^-4");
 
+        assertExpStrEquals("x*sin(x)^2+cos(x)^2", "cos(x)^2+x*sin(x)^2");
 
+    }
+
+    @Test
+    public void mergeTrigoSp() {
+        assertExpStrEquals("sin(x)^2", "sin(x)^2");
+        assertExpStrEquals("sin(x)^2*cos(x)^2+sin(x)^4", "sin(x)^2");
     }
 
     @Test

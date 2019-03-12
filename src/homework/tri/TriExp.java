@@ -1,6 +1,7 @@
 package homework.tri;
 
 import javafx.util.Pair;
+import jdk.nashorn.internal.runtime.regexp.joni.exception.ValueException;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -28,52 +29,22 @@ public class TriExp {
         termCoefMap.put(initialTriIndex, initialCoef);
     }
 
-    private static String getFactorStringOf(BigInteger index,
-                                            String factorStr) {
-        if (index.equals(BigInteger.ZERO)) {
-            return "";
-        } else if (index.equals(BigInteger.ONE)) {
-            return factorStr;
-        } else {
-            return factorStr + "^" + index.toString();
-        }
-    }
-
     private static String getTermStringOf(BigInteger coef, TriIndex triIndex) {
         if (coef.equals(BigInteger.ZERO)) {
             return "";
         }
-        BigInteger varIndex = triIndex.getVarInd();
-        BigInteger sinIndex = triIndex.getSinInd();
-        BigInteger cosIndex = triIndex.getCosInd();
-        StringBuilder builder = new StringBuilder();
-        String var = getFactorStringOf(varIndex, "x");
-        String sin = getFactorStringOf(sinIndex, "sin(x)");
-        String cos = getFactorStringOf(cosIndex, "cos(x)");
-        if (!var.equals("")) {
-            builder.append("*");
-            builder.append(var);
-        }
-        if (!sin.equals("")) {
-            builder.append("*");
-            builder.append(sin);
-        }
-        if (!cos.equals("")) {
-            builder.append("*");
-            builder.append(cos);
-        }
-        String factor = builder.toString();
+        String factor = triIndex.toString();
         String coefStr = coef.toString();
         if (coef.compareTo(BigInteger.ZERO) > 0) {
             coefStr = "+" + coefStr;
         }
-        if (!"".equals(factor)) {
+        if (!factor.isEmpty()) {
             if (coef.equals(BigInteger.ONE)) {
-                return "+" + factor.substring(1);
+                return "+" + factor;
             } else if (coef.equals(BigInteger.ONE.negate())) {
-                return "-" + factor.substring(1);
+                return "-" + factor;
             } else {
-                return coefStr + factor;
+                return coefStr + "*" + factor;
             }
         } else {
             return coefStr;
@@ -110,7 +81,8 @@ public class TriExp {
             } else {
                 rootIndex = triIndex.add(0, -2, 0);
             }
-            if (onlyAddThoseMustMerged && mustMerge(rootIndex, BigInteger.ONE
+            if (onlyAddThoseMustMerged && isGoodToMerge(rootIndex,
+                BigInteger.ONE
                 , BigInteger.TEN)) {
                 set.add(rootIndex);
             }
@@ -118,8 +90,8 @@ public class TriExp {
         return set;
     }
 
-    private boolean mustMerge(TriIndex rootTriIndex, BigInteger sinCoef,
-                              BigInteger cosCoef) {
+    private boolean isGoodToMerge(TriIndex rootTriIndex, BigInteger sinCoef,
+                                  BigInteger cosCoef) {
         // the term seems like coef * x^a * sin^b * cos^c
         // where b!=-1, b!=-2, c!=-1, c!=-2
         // can must be optimized
@@ -133,13 +105,16 @@ public class TriExp {
     }
 
     private boolean mergeTrigoOnce(boolean onlyMergeThoseMustMerged,
-                                   boolean isCos) {
-        return mergeTrigoOnce(onlyMergeThoseMustMerged, isCos, termCoefMap);
+                                   boolean isCos,
+                                   int level) {
+        return mergeTrigoOnce(onlyMergeThoseMustMerged, isCos,
+            termCoefMap, level);
     }
 
     private boolean mergeTrigoOnce(boolean onlyMergeThoseMustMerged,
                                    boolean isCos,
-                                   HashMap<TriIndex, BigInteger> termCoefMap) {
+                                   HashMap<TriIndex, BigInteger> termCoefMap,
+                                   int level) {
         boolean modified = false;
         for (TriIndex curIndex : new HashSet<>(termCoefMap.keySet())) {
             TriIndex curCos2Index;
@@ -156,45 +131,44 @@ public class TriExp {
             }
             BigInteger sin2Coef = termCoefMap.get(curSin2Index);
             BigInteger cos2Coef = termCoefMap.get(curCos2Index);
-            BigInteger root2Coef = termCoefMap.get(curRootIndex);
-            if (sin2Coef == null && cos2Coef == null) {
+            BigInteger rootCoef = termCoefMap.get(curRootIndex);
+            if ((sin2Coef == null && cos2Coef == null) ||
+                (rootCoef == null && (sin2Coef == null || cos2Coef == null))) {
+                // if two of them are null, continue
                 continue;
             }
             BigInteger resSin2Coef = sin2Coef;
             BigInteger resCos2Coef = cos2Coef;
-            if (root2Coef != null) {
-                resSin2Coef = root2Coef;
-                resCos2Coef = root2Coef;
+            if (rootCoef != null) {
+                resSin2Coef = rootCoef;
+                resCos2Coef = rootCoef;
                 if (sin2Coef != null) {
-                    resSin2Coef = sin2Coef.add(root2Coef);
+                    resSin2Coef = sin2Coef.add(rootCoef);
                 }
                 if (cos2Coef != null) {
-                    resCos2Coef = cos2Coef.add(root2Coef);
+                    resCos2Coef = cos2Coef.add(rootCoef);
                 }
             }
-            if (resCos2Coef == null || resSin2Coef == null) {
-                continue;
-            }
+
             if (onlyMergeThoseMustMerged &&
-                !mustMerge(curRootIndex, resSin2Coef, resCos2Coef)) {
+                !isGoodToMerge(curRootIndex, resSin2Coef, resCos2Coef)) {
                 continue;
             }
+
             BigInteger resRootCoef;
 
             // check abs & merge
-            if (resSin2Coef.abs().compareTo(resCos2Coef.abs()) > 0) {
-                // remove cos
-                resSin2Coef = resSin2Coef.subtract(resCos2Coef);
-                resRootCoef = resCos2Coef;
-                resCos2Coef = null;
-            } else {
-                // remove sin
-                resCos2Coef = resCos2Coef.subtract(resSin2Coef);
-                resRootCoef = resSin2Coef;
-                resSin2Coef = null;
-            }
-            if ((resSin2Coef != null) && resSin2Coef.equals(sin2Coef) ||
-                (resCos2Coef != null) && resCos2Coef.equals(cos2Coef)) {
+            TriIndex mergedTriCoef = getOptimizedCoefs(resSin2Coef, resCos2Coef,
+                curRootIndex, curSin2Index, curCos2Index, level);
+            resRootCoef = mergedTriCoef.getVarInd();
+            resSin2Coef = mergedTriCoef.getSinInd();
+            resCos2Coef = mergedTriCoef.getCosInd();
+
+
+            if ((resCos2Coef == null || resCos2Coef.equals(cos2Coef)) &&
+                (resSin2Coef == null || resSin2Coef.equals(sin2Coef))) {
+                // if resRoot==root && resSin==sin
+                // than must resCos==cos
                 continue;
             }
 
@@ -205,6 +179,84 @@ public class TriExp {
             modified = true;
         }
         return modified;
+    }
+
+    /**
+     * try to find out the best coef of given sin^2 and cos^2
+     *
+     * @param sin2Coef  coef of sin^2
+     * @param cos2Coef  coef of cos^2
+     * @param rootIndex index of root
+     * @param sinIndex  index of sin^2
+     * @param cosIndex  index of cos^2
+     * @param level     if 0 : weak mode. merge depend on abs(coef)
+     *                  if 10: must merge, merge depend on the length
+     *                  if 100: not must merge, merge depend on the length
+     * @return though its a TriIndex, it contains coefs.
+     */
+    private TriIndex getOptimizedCoefs(BigInteger sin2Coef,
+                                       BigInteger cos2Coef,
+                                       TriIndex rootIndex,
+                                       TriIndex sinIndex,
+                                       TriIndex cosIndex,
+                                       int level) {
+
+        BigInteger resRootCoef;
+        BigInteger resSin2Coef;
+        BigInteger resCos2Coef = null;
+
+        String bestStr;
+
+        if (level == 0) {
+            if (sin2Coef.abs().compareTo(cos2Coef.abs()) > 0) {
+                //remove cos
+                return new TriIndex(cos2Coef, //root
+                    sin2Coef.subtract(cos2Coef), //sin
+                    null); //cos
+            } else {
+                //remove sin
+                return new TriIndex(sin2Coef, // root
+                    null, // sin
+                    cos2Coef.subtract(sin2Coef));//cos
+            }
+        } else if (level > 0) {
+            // remove cos
+            resSin2Coef = sin2Coef.subtract(cos2Coef);
+            resRootCoef = cos2Coef;
+            bestStr = getTermStringOf(resSin2Coef, sinIndex) +
+                getTermStringOf(resRootCoef, rootIndex);
+
+            BigInteger tmpRootCoef;
+            BigInteger tmpSin2Coef;
+            BigInteger tmpCos2Coef;
+
+            String currentStr;
+
+            // remove sin
+            tmpCos2Coef = cos2Coef.subtract(sin2Coef);
+            tmpRootCoef = sin2Coef;
+            currentStr = getTermStringOf(tmpCos2Coef, cosIndex) +
+                getTermStringOf(tmpRootCoef, rootIndex);
+            if (currentStr.length() < bestStr.length()) {
+                bestStr = currentStr;
+                resCos2Coef = tmpCos2Coef;
+                resRootCoef = tmpRootCoef;
+                resSin2Coef = null;
+            }
+
+            if (level >= 100) {
+                currentStr = getTermStringOf(sin2Coef, sinIndex) +
+                    getTermStringOf(cos2Coef, cosIndex);
+                if (currentStr.length() < bestStr.length()) {
+                    return new TriIndex(null, sin2Coef, cos2Coef);
+                }
+            }
+
+            return new TriIndex(resRootCoef, resSin2Coef, resCos2Coef);
+
+        } else {
+            throw new ValueException("wrong level:" + level);
+        }
     }
 
     private void updateMap(TriIndex curRootIndex, TriIndex curSin2Index,
@@ -226,17 +278,58 @@ public class TriExp {
 
     private void mergeTrigo() {
         while (true) {
-            if (!mergeTrigoOnce(true, true)
-                && !mergeTrigoOnce(true, false)) {
+            if (!mergeTrigoOnce(true, true, 0)
+                && !mergeTrigoOnce(true, false, 0)) {
                 break;
             }
         }
+
+        // greater level
+        while (true) {
+            if (!mergeTrigoOnce(true, true, 10)
+                && !mergeTrigoOnce(true, false, 10)) {
+                break;
+            }
+        }
+
+        while (true) {
+            if (!mergeTrigoOnce(true, true, 100)
+                && !mergeTrigoOnce(true, false, 100)) {
+                break;
+            }
+        }
+
         HashMap<TriIndex, BigInteger> copy = new HashMap<>(termCoefMap);
         while (true) {
             if (!mergeTrigoOnce(false, true,
-                copy)
+                copy, 0)
                 && !mergeTrigoOnce(false, false,
-                copy)) {
+                copy, 0)) {
+                break;
+            }
+        }
+        if (getExpStringOf(copy).length() <
+            getExpStringOf(termCoefMap).length()) {
+            termCoefMap = copy;
+        }
+        while (true) {
+            if (!mergeTrigoOnce(false, true,
+                copy, 10)
+                && !mergeTrigoOnce(false, false,
+                copy, 10)) {
+                break;
+            }
+        }
+        if (getExpStringOf(copy).length() <
+            getExpStringOf(termCoefMap).length()) {
+            termCoefMap = copy;
+        }
+
+        while (true) {
+            if (!mergeTrigoOnce(false, true,
+                copy, 100)
+                && !mergeTrigoOnce(false, false,
+                copy, 100)) {
                 break;
             }
         }
@@ -245,36 +338,6 @@ public class TriExp {
             termCoefMap = copy;
         }
     }
-
-    /**
-     * terms like 1-sin^2 = cos^2
-     */
-    private boolean mergeTrigoAndRootOnce(boolean isCos) {
-        HashSet<TriIndex> trigoSet = getTrigoIndSet(isCos, false);
-        boolean modified = false;
-        for (TriIndex targetIndex : trigoSet) {
-            TriIndex trigoOriIndex;
-            if (isCos) {
-                trigoOriIndex = targetIndex.add(0, 0, 2);
-            } else {
-                trigoOriIndex = targetIndex.add(0, 2, 0);
-            }
-            BigInteger trigoCoef = termCoefMap.get(trigoOriIndex);
-            BigInteger rootCoef = termCoefMap.get(targetIndex);
-            if (trigoCoef.negate().equals(rootCoef)) {
-                termCoefMap.remove(targetIndex);
-                termCoefMap.remove(trigoOriIndex);
-                if (isCos) {
-                    addAppend(targetIndex.add(0, 2, 0), rootCoef);
-                } else {
-                    addAppend(targetIndex.add(0, 0, 2), rootCoef);
-                }
-                modified = true;
-            }
-        }
-        return modified;
-    }
-
 
     /**
      * get a string from giving map copy
@@ -286,7 +349,11 @@ public class TriExp {
         StringBuilder builder = new StringBuilder();
         List<Pair<TriIndex, BigInteger>> list =
             new ArrayList<>(termCoefMap.size());
-        termCoefMap.forEach((k, v) -> list.add(new Pair<>(k, v)));
+        termCoefMap.forEach((k, v) -> {
+            if (v != null) {
+                list.add(new Pair<>(k, v));
+            }
+        });
         list.sort((v1, v2) -> {
             if (v1.getValue().equals(v2.getValue())) {
                 return v1.getKey().compareTo(v2.getKey());
