@@ -18,6 +18,10 @@ import java.math.BigInteger;
  */
 public class DefaultExpFactory implements ExpFactory {
 
+    private static final ValueExp ZERO = new Constant(0);
+    private static final ValueExp ONE = new Constant(1);
+    private static final ValueExp NEG_ONE = new Constant(-1);
+
     private DefaultExpFactory() {
     }
 
@@ -95,10 +99,24 @@ public class DefaultExpFactory implements ExpFactory {
 
     @Override
     public ValueExp constant(BigInteger value) {
+        if (value.equals(BigInteger.ZERO)) {
+            return ZERO;
+        } else if (value.equals(BigInteger.ONE)) {
+            return ONE;
+        } else if (value.equals(BigInteger.ONE.negate())) {
+            return NEG_ONE;
+        }
         return new Constant(value);
     }
 
     public ValueExp constant(long value) {
+        if (value == 0) {
+            return ZERO;
+        } else if (value == 1) {
+            return ONE;
+        } else if (value == -1) {
+            return NEG_ONE;
+        }
         return new Constant(value);
     }
 

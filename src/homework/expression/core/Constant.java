@@ -8,7 +8,7 @@ import homework.expression.core.interfaces.ValueExp;
 import java.math.BigInteger;
 import java.util.Objects;
 
-class Constant extends BaseImmutableExp implements ValueExp {
+public class Constant extends BaseImmutableExp implements ValueExp {
 
     private BigInteger value;
 

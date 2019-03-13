@@ -11,9 +11,16 @@ import java.math.BigInteger;
 
 public abstract class BaseExp implements Expression, FactoryCreatedExp {
 
+    private ExpFactory factory = DefaultExpFactory.getInstance();
+
     @Override
     public ExpFactory getFactory() {
-        return DefaultExpFactory.getInstance();
+        return factory;
+    }
+
+    @Override
+    public void setFactory(ExpFactory factory) {
+        this.factory = factory;
     }
 
     @Override
