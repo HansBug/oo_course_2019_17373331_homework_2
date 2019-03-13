@@ -1,8 +1,8 @@
 package homework.expression.parse.matcher;
 
+import homework.expression.core.DefaultExpFactory;
 import homework.expression.core.interfaces.ExpFactory;
 import homework.expression.core.interfaces.Expression;
-import homework.expression.multi.MultiExpFactory;
 
 import java.math.BigInteger;
 import java.util.regex.Matcher;
@@ -16,7 +16,7 @@ public class FactorPattern {
         "\\(" + BLANK_PATTERN + "x" + BLANK_PATTERN + "\\)";
     private static final String COS_PATTERN = "cos" + BLANK_PATTERN +
         "\\(" + BLANK_PATTERN + "x" + BLANK_PATTERN + "\\)";
-    private static final ExpFactory FACTORY = MultiExpFactory.getInstance();
+    private static final ExpFactory FACTORY = DefaultExpFactory.getInstance();
     private String rePatternStr;
     private String factorPatternStr;
     private Pattern rePattern;
